@@ -1,4 +1,4 @@
-package com.adi.magicspacex.ui.theme
+package com.adi.magicspacex.utils.theme
 
 import androidx.compose.ui.graphics.Color
 

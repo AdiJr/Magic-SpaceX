@@ -3,36 +3,21 @@ package com.adi.magicspacex
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.adi.magicspacex.ui.theme.MagicSpaceXTheme
+import com.adi.magicspacex.ui.MyApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MagicSpaceXTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
-            }
+            MyApp()
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
+@Preview("HomeScreen", showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    MagicSpaceXTheme {
-        Greeting("Android")
-    }
+    MyApp()
 }
