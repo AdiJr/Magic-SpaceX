@@ -1,4 +1,5 @@
 import com.adi.magicspacex.buildsrc.Libs
+import com.adi.magicspacex.buildsrc.Versions
 
 buildscript {
     repositories {
