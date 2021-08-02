@@ -26,6 +26,11 @@ object Libs {
         }
     }
 
+    object Material {
+        private const val version = "1.5.0-alpha01"
+        const val material = "com.google.android.material:material:$version"
+    }
+
     object AndroidX {
         object Activity {
             const val activityCompose = "androidx.activity:activity-compose:1.3.0"
@@ -83,5 +88,10 @@ object Libs {
 
     object Coil {
         const val coilCompose = "io.coil-kt:coil-compose:1.3.0"
+    }
+
+    object Lottie {
+        private const val lottieVersion = "4.0.0"
+        const val lottieCompose = "com.airbnb.android:lottie-compose:$lottieVersion"
     }
 }
