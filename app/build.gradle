@@ -23,7 +23,20 @@ android {
         }
     }
 
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('debug.keystore')
+            storePassword 'spacex'
+            keyAlias 'androiddebugkey'
+            keyPassword 'spacex'
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -56,10 +69,6 @@ dependencies {
     implementation Libs.Kotlin.Coroutines.android
 
     implementation Libs.Accompanist.insets
-
-    implementation Libs.Lottie.lottieCompose
-
-    implementation Libs.Material.material
 
     implementation Libs.AndroidX.Activity.activityCompose
     implementation Libs.AndroidX.appcompat
