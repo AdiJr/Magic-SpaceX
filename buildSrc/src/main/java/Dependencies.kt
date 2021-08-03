@@ -40,6 +40,7 @@ object Libs {
 
         object Compose {
             const val version = "1.0.0"
+            private const val navigationVersion = "2.4.0-alpha05"
 
             const val runtime = "androidx.compose.runtime:runtime:$version"
             const val runtimeLivedata = "androidx.compose.runtime:runtime-livedata:$version"
@@ -49,6 +50,7 @@ object Libs {
             const val tooling = "androidx.compose.ui:ui-tooling:$version"
             const val animation = "androidx.compose.animation:animation:$version"
             const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
+            const val navigation = "androidx.navigation:navigation-compose:$navigationVersion"
         }
 
         object Lifecycle {
@@ -87,11 +89,24 @@ object Libs {
     }
 
     object Coil {
-        const val coilCompose = "io.coil-kt:coil-compose:1.3.0"
+        private const val version = "1.3.0"
+        const val coilCompose = "io.coil-kt:coil-compose:$version"
     }
 
     object Lottie {
-        private const val lottieVersion = "4.0.0"
-        const val lottieCompose = "com.airbnb.android:lottie-compose:$lottieVersion"
+        private const val version = "4.0.0"
+        const val lottieCompose = "com.airbnb.android:lottie-compose:$version"
+    }
+
+    object Retrofit {
+        private const val version = "2.9.0"
+        const val retrofit = "com.squareup.retrofit2:retrofit:$version"
+    }
+
+    object Chucker {
+        private const val version = "3.5.2"
+        const val chuckerDebug = "com.github.chuckerteam.chucker:library:$version"
+        const val chuckerRelease =
+            "com.github.chuckerteam.chucker:library-no-op:$version"
     }
 }
