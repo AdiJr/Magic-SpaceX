@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,6 +13,7 @@ import com.adi.magicspacex.ui.HomeScreen
 import com.adi.magicspacex.ui.SplashScreen
 import com.adi.magicspacex.utils.routing.Routes
 import com.adi.magicspacex.utils.theme.MainAppTheme
+import com.adi.magicspacex.viewmodels.HomeViewModel
 import com.google.accompanist.insets.ProvideWindowInsets
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,7 +51,8 @@ fun CreateNavHost() {
             SplashScreen(onClick = { navController.navigate(Routes.Home.route) })
         }
         composable(Routes.Home.route) {
-            HomeScreen(stringResource(id = Routes.Home.resourceId))
+            val homeViewModel = hiltViewModel<HomeViewModel>()
+            HomeScreen(homeViewModel)
         }
 
     }

@@ -76,11 +76,14 @@ object Libs {
 
     object Hilt {
         private const val version = "2.37"
+        private const val navigationComposeVersion = "1.0.0-alpha03"
 
         const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$version"
         const val android = "com.google.dagger:hilt-android:$version"
         const val compiler = "com.google.dagger:hilt-compiler:$version"
         const val testing = "com.google.dagger:hilt-android-testing:$version"
+        const val navigationCompose =
+            "androidx.hilt:hilt-navigation-compose:$navigationComposeVersion"
     }
 
     object JUnit {
@@ -102,5 +105,10 @@ object Libs {
         private const val version = "2.9.0"
         const val retrofit = "com.squareup.retrofit2:retrofit:$version"
         const val gson = "com.squareup.retrofit2:converter-gson:$version"
+    }
+
+    object Timber {
+        private const val version = "5.0.0"
+        const val timber = "com.jakewharton.timber:timber:$version"
     }
 }

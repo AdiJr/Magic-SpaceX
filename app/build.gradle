@@ -78,9 +78,14 @@ dependencies {
     implementation Libs.AndroidX.Lifecycle.viewModelKtx
 
     implementation Libs.Hilt.android
+    implementation Libs.Hilt.gradlePlugin
+    implementation Libs.Hilt.testing
+    implementation Libs.Hilt.navigationCompose
     kapt Libs.Hilt.compiler
 
     implementation Libs.Coil.coilCompose
+
+    implementation Libs.Timber.timber
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner
