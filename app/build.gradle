@@ -62,9 +62,7 @@ dependencies {
     implementation Libs.Material.material
 
     implementation Libs.Retrofit.retrofit
-
-    debugImplementation Libs.Chucker.chuckerDebug
-    releaseImplementation Libs.Chucker.chuckerRelease
+    implementation Libs.Retrofit.gson
 
     implementation Libs.AndroidX.Activity.activityCompose
     implementation Libs.AndroidX.appcompat

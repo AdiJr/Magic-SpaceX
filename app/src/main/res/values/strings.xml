@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Magic SpaceX</string>
+    <string name="route_splash">Splash Screen</string>
+    <string name="route_home">Home Screen</string>
 </resources>
