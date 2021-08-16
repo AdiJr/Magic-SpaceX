@@ -107,6 +107,11 @@ object Libs {
         const val gson = "com.squareup.retrofit2:converter-gson:$version"
     }
 
+    object OkHttp {
+        private const val loggingVersion = "4.9.1"
+        const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:$loggingVersion"
+    }
+
     object Timber {
         private const val version = "5.0.0"
         const val timber = "com.jakewharton.timber:timber:$version"

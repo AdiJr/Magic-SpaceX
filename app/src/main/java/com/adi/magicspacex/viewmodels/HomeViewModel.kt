@@ -15,10 +15,14 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     private val _companyData = MutableLiveData<CompanyData?>()
     val companyData: LiveData<CompanyData?> = _companyData
 
-    fun getCompanyData() {
+    init {
+        getCompanyData()
+    }
+
+    private fun getCompanyData() {
         viewModelScope.launch {
             try {
-                _companyData.value = repository.getCompanyData()
+                _companyData.postValue(repository.getCompanyData())
             } catch (e: Exception) {
                 e.printStackTrace()
             }

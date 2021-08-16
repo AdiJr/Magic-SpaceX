@@ -19,16 +19,18 @@ import com.adi.magicspacex.viewmodels.HomeViewModel
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
     val companyData: CompanyData? by homeViewModel.companyData.observeAsState()
-    homeViewModel.getCompanyData()
+    companyData?.let { HomeScreenData(it) }
+}
 
-    companyData?.let {
-        Text(
-            text = it.founder,
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .wrapContentSize(align = Alignment.Center),
-            style = TextStyle(color = Color.White, fontSize = 25.sp)
-        )
-    }
+@Composable
+fun HomeScreenData(companyData: CompanyData) {
+    Text(
+        text = companyData.founder,
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .wrapContentSize(align = Alignment.Center),
+        style = TextStyle(color = Color.White, fontSize = 25.sp)
+    )
+
 }
