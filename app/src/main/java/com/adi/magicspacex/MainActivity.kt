@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,6 +42,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@ExperimentalMaterialApi
 @Composable
 fun MyApp() {
     MainAppTheme {
@@ -49,6 +52,7 @@ fun MyApp() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun CreateNavHost() {
     val navController = rememberNavController()

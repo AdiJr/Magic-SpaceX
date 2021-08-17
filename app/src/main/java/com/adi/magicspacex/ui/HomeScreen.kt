@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
-import com.adi.magicspacex.models.latest_launch.LatestLaunch
+import com.adi.magicspacex.models.latest_launch.Launch
 import com.adi.magicspacex.models.rockets.Rocket
 import com.adi.magicspacex.viewmodels.HomeViewModel
 
@@ -46,13 +46,13 @@ private fun HomeScreenData(homeViewModel: HomeViewModel) {
 
 @Composable
 private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
-    homeViewModel.getLatestLaunch()
-    val latestLaunch: LatestLaunch? by homeViewModel.latestLaunch.observeAsState()
+    homeViewModel.fetchLatestLaunch()
+    val launch: Launch? by homeViewModel.launch.observeAsState()
 
     Box {
         Image(
             painter = rememberImagePainter(
-                data = latestLaunch?.links?.flickr?.original?.first(),
+                data = launch?.links?.flickr?.original?.first(),
                 builder = {
                     crossfade(true)
                 }
@@ -87,7 +87,7 @@ private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
                     color = Color.White,
                 ),
             )
-            latestLaunch?.let {
+            launch?.let {
                 Text(
                     it.name,
                     style = MaterialTheme.typography.body1.copy(
@@ -118,16 +118,15 @@ private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
 @ExperimentalMaterialApi
 @Composable
 private fun ContentSection(homeViewModel: HomeViewModel) {
-    homeViewModel.getRockets()
-    val rockets: Rocket? by homeViewModel.rockets.observeAsState()
+    homeViewModel.fetchRockets()
+    homeViewModel.fetchPastLaunches()
+
+    val rockets: List<Rocket>? by homeViewModel.rockets.observeAsState()
+    val pastLaunches: List<Launch>? by homeViewModel.pastLaunches.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
-        Text(
-            "Past missions",
-            modifier = Modifier.padding(vertical = 40.dp),
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
-        )
-        rockets?.let { RocketsCarouselSection(list = it) }
+        pastLaunches?.let { PastLaunchesCarouselSection(it) }
+        rockets?.let { RocketsCarouselSection(rockets = it) }
         Text(
             "Dragon spaceships",
             modifier = Modifier.padding(vertical = 40.dp),
@@ -154,7 +153,7 @@ private fun ContentSection(homeViewModel: HomeViewModel) {
 
 @ExperimentalMaterialApi
 @Composable
-private fun RocketsCarouselSection(list: Rocket) {
+private fun RocketsCarouselSection(rockets: List<Rocket>) {
     Column {
         Text(
             "Rockets",
@@ -162,7 +161,7 @@ private fun RocketsCarouselSection(list: Rocket) {
             modifier = Modifier.padding(bottom = 10.dp)
         )
         LazyRow {
-            items(list.toList()) { rocket ->
+            items(rockets) { rocket ->
                 Card(
                     onClick = {},
                     shape = RoundedCornerShape(15.dp),
@@ -210,5 +209,66 @@ private fun RocketsCarouselSection(list: Rocket) {
             }
         }
     }
+}
 
+@ExperimentalMaterialApi
+@Composable
+private fun PastLaunchesCarouselSection(launches: List<Launch>) {
+    Column(Modifier.padding(vertical = 20.dp)) {
+        Text(
+            "Past missions",
+            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        LazyRow {
+            items(
+                launches.reversed().subList(1, launches.size)
+                    .filter { it.links.flickr.original.isNotEmpty() }) { launch ->
+                Card(
+                    onClick = {},
+                    shape = RoundedCornerShape(15.dp),
+                    elevation = 15.dp,
+                    modifier = Modifier
+                        .size(300.dp, 200.dp)
+                        .padding(end = 10.dp)
+                ) {
+                    Box {
+                        Image(
+                            painter = rememberImagePainter(
+                                data = launch.links.flickr.original.first(),
+                                builder = {
+                                    crossfade(true)
+                                }
+                            ),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillHeight,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(300.dp, 200.dp)
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.6f)
+                                        ),
+                                        0.0f, Float.POSITIVE_INFINITY
+                                    )
+                                ),
+                        )
+                        Text(
+                            launch.name,
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(10.dp),
+                            style = MaterialTheme.typography.body1.copy(
+                                fontSize = 17.sp,
+                                color = Color.White
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
 }

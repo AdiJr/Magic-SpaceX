@@ -4,9 +4,11 @@ import javax.inject.Inject
 
 class SpacexService @Inject constructor(private val spacexClient: SpacexClient) {
 
-    suspend fun getCompanyData() = spacexClient.getCompanyData()
+    suspend fun fetchCompanyData() = spacexClient.fetchCompanyData()
 
-    suspend fun getLatestLaunch() = spacexClient.getLatestLaunch()
+    suspend fun fetchLatestLaunch() = spacexClient.fetchLatestLaunch()
 
-    suspend fun getRockets() = spacexClient.getRockets()
+    suspend fun fetchRockets() = spacexClient.fetchRockets()
+
+    suspend fun fetchPastLaunches() = spacexClient.fetchPastLaunches()
 }

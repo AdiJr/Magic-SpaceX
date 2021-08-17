@@ -1,6 +1,6 @@
 package com.adi.magicspacex.models.latest_launch
 
-data class LatestLaunch(
+data class Launch(
     val capsules: List<Any>,
     val cores: List<Core>,
     val crew: List<Any>,
@@ -12,7 +12,6 @@ data class LatestLaunch(
     val launchpad: String,
     val links: Links,
     val name: String,
-    val net: Boolean,
     val payloads: List<String>,
     val rocket: String,
     val ships: List<String>,
