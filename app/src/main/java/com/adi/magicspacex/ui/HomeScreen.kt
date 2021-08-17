@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -21,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
-import com.adi.magicspacex.models.latest_launch.Launch
-import com.adi.magicspacex.models.rockets.Rocket
+import com.adi.magicspacex.models.dragon.Dragon
+import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.viewmodels.HomeViewModel
 
 @ExperimentalMaterialApi
@@ -120,18 +122,21 @@ private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
 private fun ContentSection(homeViewModel: HomeViewModel) {
     homeViewModel.fetchRockets()
     homeViewModel.fetchPastLaunches()
+    homeViewModel.fetchDragons()
 
     val rockets: List<Rocket>? by homeViewModel.rockets.observeAsState()
     val pastLaunches: List<Launch>? by homeViewModel.pastLaunches.observeAsState()
+    val dragons: List<Dragon>? by homeViewModel.dragons.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
         pastLaunches?.let { PastLaunchesCarouselSection(it) }
         rockets?.let { RocketsCarouselSection(rockets = it) }
         Text(
             "Dragon spaceships",
-            modifier = Modifier.padding(vertical = 40.dp),
+            modifier = Modifier.padding(vertical = 20.dp),
             style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
         )
+        dragons?.let { DragonColumn(it) }
         Text(
             "Ships",
             style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
@@ -161,14 +166,14 @@ private fun RocketsCarouselSection(rockets: List<Rocket>) {
             modifier = Modifier.padding(bottom = 10.dp)
         )
         LazyRow {
-            items(rockets) { rocket ->
+            items(rockets.reversed()) { rocket ->
                 Card(
                     onClick = {},
                     shape = RoundedCornerShape(15.dp),
                     elevation = 15.dp,
                     modifier = Modifier
                         .size(300.dp, 200.dp)
-                        .padding(end = 10.dp)
+                        .padding(end = 20.dp)
                 ) {
                     Box {
                         Image(
@@ -230,7 +235,7 @@ private fun PastLaunchesCarouselSection(launches: List<Launch>) {
                     elevation = 15.dp,
                     modifier = Modifier
                         .size(300.dp, 200.dp)
-                        .padding(end = 10.dp)
+                        .padding(end = 20.dp)
                 ) {
                     Box {
                         Image(
@@ -267,6 +272,62 @@ private fun PastLaunchesCarouselSection(launches: List<Launch>) {
                             ),
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun DragonColumn(dragons: List<Dragon>) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        dragons.map { dragon ->
+            Card(
+                onClick = {},
+                shape = RoundedCornerShape(15.dp),
+                elevation = 15.dp,
+                modifier = Modifier
+                    .size(300.dp)
+                    .padding(bottom = 20.dp)
+            ) {
+                Box {
+                    Image(
+                        painter = rememberImagePainter(
+                            data = dragon.flickr_images.first(),
+                            builder = {
+                                crossfade(true)
+                            }
+                        ),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillHeight,
+                        modifier = Modifier.scale(1.5f)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(300.dp)
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.8f)
+                                    ),
+                                    0.0f, Float.POSITIVE_INFINITY
+                                )
+                            ),
+                    )
+                    Text(
+                        dragon.name,
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        style = MaterialTheme.typography.h1.copy(
+                            fontSize = 22.sp,
+                            color = Color.White
+                        ),
+                    )
                 }
             }
         }

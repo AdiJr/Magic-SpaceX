@@ -1,8 +1,9 @@
 package com.adi.magicspacex.repository.remote
 
 import com.adi.magicspacex.models.company_info.CompanyInfo
-import com.adi.magicspacex.models.latest_launch.Launch
-import com.adi.magicspacex.models.rockets.Rocket
+import com.adi.magicspacex.models.dragon.Dragon
+import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.models.rocket.Rocket
 import retrofit2.http.GET
 
 interface SpacexClient {
@@ -18,4 +19,7 @@ interface SpacexClient {
 
     @GET("v5/launches/past")
     suspend fun fetchPastLaunches(): List<Launch>
+
+    @GET("v4/dragons")
+    suspend fun fetchDragons(): List<Dragon>
 }

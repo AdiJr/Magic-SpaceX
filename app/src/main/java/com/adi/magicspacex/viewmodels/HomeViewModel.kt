@@ -5,8 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adi.magicspacex.models.company_info.CompanyInfo
-import com.adi.magicspacex.models.latest_launch.Launch
-import com.adi.magicspacex.models.rockets.Rocket
+import com.adi.magicspacex.models.dragon.Dragon
+import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,18 +20,20 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     private val _latestLaunch = MutableLiveData<Launch?>()
     private val _rockets = MutableLiveData<List<Rocket>?>()
     private val _pastLaunches = MutableLiveData<List<Launch>?>()
+    private val _dragons = MutableLiveData<List<Dragon>?>()
 
     val companyData: LiveData<CompanyInfo?> = _companyData
     val launch: LiveData<Launch?> = _latestLaunch
     val rockets: LiveData<List<Rocket>?> = _rockets
     val pastLaunches: LiveData<List<Launch>?> = _pastLaunches
+    val dragons: LiveData<List<Dragon>?> = _dragons
 
     fun fetchCompanyData() {
         viewModelScope.launch {
             try {
                 _companyData.postValue(repository.fetchCompanyData())
             } catch (e: Exception) {
-                Timber.e(e, "Error in getting company data")
+                Timber.e(e, "Error in fetching company data")
             }
         }
     }
@@ -40,7 +43,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
             try {
                 _latestLaunch.postValue(repository.fetchLatestLaunch())
             } catch (e: Exception) {
-                Timber.e(e, "Error in getting latest launch data")
+                Timber.e(e, "Error in fetching latest launch data")
             }
         }
     }
@@ -50,7 +53,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
             try {
                 _rockets.postValue(repository.fetchRockets())
             } catch (e: Exception) {
-                Timber.e(e, "Error in getting rockets data")
+                Timber.e(e, "Error in fetching rockets data")
             }
         }
     }
@@ -60,7 +63,17 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
             try {
                 _pastLaunches.postValue(repository.fetchPastLaunches())
             } catch (e: Exception) {
-                Timber.e(e, "Error in getting past launches data")
+                Timber.e(e, "Error in fetching past launches data")
+            }
+        }
+    }
+
+    fun fetchDragons() {
+        viewModelScope.launch {
+            try {
+                _dragons.postValue(repository.fetchDragons())
+            } catch (e: Exception) {
+                Timber.e(e, "Error in fetching past launches data")
             }
         }
     }
