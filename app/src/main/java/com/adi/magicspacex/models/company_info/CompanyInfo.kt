@@ -1,6 +1,8 @@
-package com.adi.magicspacex.models
+package com.adi.magicspacex.models.company_info
 
-data class CompanyData(
+import com.adi.magicspacex.models.latest_launch.Links
+
+data class CompanyInfo(
     val ceo: String,
     val coo: String,
     val cto: String,

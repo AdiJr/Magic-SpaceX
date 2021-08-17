@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,7 +43,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     MainAppTheme {
-        CreateNavHost()
+        Surface(color = MaterialTheme.colors.background) {
+            CreateNavHost()
+        }
     }
 }
 
@@ -61,6 +65,5 @@ fun CreateNavHost() {
             val homeViewModel = hiltViewModel<HomeViewModel>()
             HomeScreen(homeViewModel)
         }
-
     }
 }

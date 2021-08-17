@@ -22,7 +22,7 @@ class RemoteModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.spacexdata.com/v4/")
+        .baseUrl("https://api.spacexdata.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()

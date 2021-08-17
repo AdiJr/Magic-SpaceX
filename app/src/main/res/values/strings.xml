@@ -2,5 +2,5 @@
     <string name="app_name">Magic SpaceX</string>
     <string name="register">Register</string>
     <string name="guest_continue">Continue as guest</string>
-    <string name="splash_quote">"There are no passengers on spaceship earth. We are all crew"</string>
+    <string name="splash_quote">There are no passengers on spaceship earth. We are all crew</string>
 </resources>
