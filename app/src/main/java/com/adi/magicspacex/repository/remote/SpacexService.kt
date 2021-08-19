@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 class SpacexService @Inject constructor(private val spacexClient: SpacexClient) {
 
-    suspend fun fetchCompanyData() = spacexClient.fetchCompanyData()
+    suspend fun fetchCompanyInfo() = spacexClient.fetchCompanyInfo()
 
     suspend fun fetchLatestLaunch() = spacexClient.fetchLatestLaunch()
 

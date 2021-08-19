@@ -10,7 +10,7 @@ data class Launch(
     val flight_number: Int,
     val id: String,
     val launchpad: String,
-    val links: Links,
+    val links: LaunchLinks,
     val name: String,
     val payloads: List<String>,
     val rocket: String,

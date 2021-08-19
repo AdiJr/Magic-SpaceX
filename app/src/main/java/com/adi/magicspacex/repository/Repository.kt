@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class Repository @Inject constructor(private val spacexService: SpacexService) {
 
-    suspend fun fetchCompanyData() = spacexService.fetchCompanyData()
+    suspend fun fetchCompanyInfo() = spacexService.fetchCompanyInfo()
 
     suspend fun fetchLatestLaunch() = spacexService.fetchLatestLaunch()
 

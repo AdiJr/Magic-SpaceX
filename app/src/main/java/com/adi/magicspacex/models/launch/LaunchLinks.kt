@@ -1,6 +1,6 @@
 package com.adi.magicspacex.models.launch
 
-data class Links(
+data class LaunchLinks(
     val article: Any,
     val flickr: Flickr,
     val patch: Patch,

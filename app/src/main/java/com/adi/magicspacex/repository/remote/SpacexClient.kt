@@ -10,8 +10,8 @@ import retrofit2.http.GET
 
 interface SpacexClient {
 
-    @GET("company")
-    suspend fun fetchCompanyData(): CompanyInfo
+    @GET("v4/company")
+    suspend fun fetchCompanyInfo(): CompanyInfo
 
     @GET("v5/launches/latest")
     suspend fun fetchLatestLaunch(): Launch

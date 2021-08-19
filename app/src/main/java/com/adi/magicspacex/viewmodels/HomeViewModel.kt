@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
-    private val _companyData = MutableLiveData<CompanyInfo?>()
+    private val _companyInfo = MutableLiveData<CompanyInfo?>()
     private val _latestLaunch = MutableLiveData<Launch?>()
     private val _rockets = MutableLiveData<List<Rocket>?>()
     private val _pastLaunches = MutableLiveData<List<Launch>?>()
@@ -33,7 +33,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     private val _launchpadsLoaded = MutableLiveData(false)
     private val _shipsLoaded = MutableLiveData(false)
 
-    val companyData: LiveData<CompanyInfo?> = _companyData
+    val companyInfo: LiveData<CompanyInfo?> = _companyInfo
     val launch: LiveData<Launch?> = _latestLaunch
     val rockets: LiveData<List<Rocket>?> = _rockets
     val pastLaunches: LiveData<List<Launch>?> = _pastLaunches
@@ -49,6 +49,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     val shipsLoaded: LiveData<Boolean> = _launchpadsLoaded
 
     init {
+        fetchCompanyInfo()
         fetchLatestLaunch()
         fetchPastLaunches()
         fetchRockets()
@@ -57,10 +58,10 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         fetchShips()
     }
 
-    fun fetchCompanyData() {
+    private fun fetchCompanyInfo() {
         viewModelScope.launch {
             try {
-                _companyData.postValue(repository.fetchCompanyData())
+                _companyInfo.postValue(repository.fetchCompanyInfo())
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching company data")
             }

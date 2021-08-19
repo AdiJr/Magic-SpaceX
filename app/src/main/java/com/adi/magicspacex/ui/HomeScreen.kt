@@ -1,13 +1,13 @@
 package com.adi.magicspacex.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,16 +18,21 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.adi.magicspacex.models.company_info.CompanyInfo
 import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.viewmodels.HomeViewModel
+
 
 @ExperimentalMaterialApi
 @Composable
@@ -37,8 +42,9 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
     val rocketsLoaded by homeViewModel.rocketsLoaded.observeAsState(false)
     val dragonsLoaded by homeViewModel.dragonsLoaded.observeAsState(false)
     val launchpadsLoaded by homeViewModel.launchpadsLoaded.observeAsState(false)
+    val shipsLoaded by homeViewModel.shipsLoaded.observeAsState(false)
 
-    if (latestLaunchLoaded && pastLaunchesLoaded && rocketsLoaded && dragonsLoaded && launchpadsLoaded)
+    if (latestLaunchLoaded && pastLaunchesLoaded && rocketsLoaded && dragonsLoaded && launchpadsLoaded && shipsLoaded)
         HomeScreenData(homeViewModel)
     else
         CircularProgressIndicator(
@@ -140,6 +146,7 @@ private fun ContentSection(homeViewModel: HomeViewModel) {
     val dragons: List<Dragon>? by homeViewModel.dragons.observeAsState()
     val launchpads: List<Launchpad>? by homeViewModel.launchpads.observeAsState()
     val ships: List<Ship>? by homeViewModel.ships.observeAsState()
+    val companyInfo: CompanyInfo? by homeViewModel.companyInfo.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
         pastLaunches?.let { PastLaunchesCarouselSection(it) }
@@ -147,10 +154,7 @@ private fun ContentSection(homeViewModel: HomeViewModel) {
         dragons?.let { DragonColumn(it) }
         launchpads?.let { LaunchpadsCarouselSection(it) }
         ships?.let { ShipsCarouselSection(it) }
-        Text(
-            "About SpaceX",
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
-        )
+        companyInfo?.let { AboutSection(it) }
     }
 }
 
@@ -456,4 +460,82 @@ private fun ShipsCarouselSection(ships: List<Ship>) {
             }
         }
     }
+}
+
+@Composable
+fun AboutSection(companyInfo: CompanyInfo) {
+    val context = LocalContext.current
+
+    Text(
+        "About SpaceX",
+        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+        modifier = Modifier.padding(vertical = 20.dp)
+    )
+    Text(
+        companyInfo.summary,
+        style = MaterialTheme.typography.body1.copy(
+            fontSize = 15.sp,
+            textAlign = TextAlign.Justify
+        ),
+    )
+    OutlinedButton(onClick = { }) {
+        Text(
+            "See more",
+            style = MaterialTheme.typography.h1.copy(
+                fontSize = 15.sp,
+                textDecoration = TextDecoration.Underline
+            ),
+        )
+    }
+    Text(
+        "Links", style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+        modifier = Modifier
+            .padding(vertical = 20.dp)
+            .fillMaxWidth()
+    )
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        SocialImageLink(
+            context = context,
+            imageUrl = "https://i.pinimg.com/originals/00/50/71/005071cbf1fdd17673607ecd7b7e88f6.png",
+            url = companyInfo.links.website
+        )
+        SocialImageLink(
+            context = context,
+            imageUrl = "https://www.cabq.gov/social-media/images/flickr.png/@@images/image.png",
+            url = companyInfo.links.flickr
+        )
+        SocialImageLink(
+            context = context,
+            imageUrl = "https://image.flaticon.com/icons/png/512/124/124021.png",
+            url = companyInfo.links.twitter
+        )
+    }
+    Spacer(Modifier.height(20.dp))
+}
+
+@Composable
+private fun SocialImageLink(context: Context, imageUrl: String, url: String) {
+    Image(
+        painter = rememberImagePainter(
+            data = imageUrl,
+            builder = {
+                crossfade(true)
+            }
+        ),
+        contentDescription = null,
+        modifier = Modifier
+            .size(40.dp)
+            .clickable {
+                launchUrl(context, url)
+            }
+    )
+}
+
+fun launchUrl(context: Context, url: String) {
+    val browserIntent =
+        Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(browserIntent)
 }
