@@ -13,4 +13,6 @@ class SpacexService @Inject constructor(private val spacexClient: SpacexClient) 
     suspend fun fetchPastLaunches() = spacexClient.fetchPastLaunches()
 
     suspend fun fetchDragons() = spacexClient.fetchDragons()
+
+    suspend fun fetchLaunchpads() = spacexClient.fetchLaunchpads()
 }

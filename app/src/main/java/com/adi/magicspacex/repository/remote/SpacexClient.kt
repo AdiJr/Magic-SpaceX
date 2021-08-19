@@ -3,6 +3,7 @@ package com.adi.magicspacex.repository.remote
 import com.adi.magicspacex.models.company_info.CompanyInfo
 import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import retrofit2.http.GET
 
@@ -22,4 +23,7 @@ interface SpacexClient {
 
     @GET("v4/dragons")
     suspend fun fetchDragons(): List<Dragon>
+
+    @GET("v4/launchpads")
+    suspend fun fetchLaunchpads(): List<Launchpad>
 }

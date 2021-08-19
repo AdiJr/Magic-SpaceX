@@ -24,13 +24,28 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.viewmodels.HomeViewModel
 
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
-    HomeScreenData(homeViewModel)
+    val latestLaunchLoaded by homeViewModel.latestLaunchLoaded.observeAsState(false)
+    val pastLaunchesLoaded by homeViewModel.pastLaunchesLoaded.observeAsState(false)
+    val rocketsLoaded by homeViewModel.rocketsLoaded.observeAsState(false)
+    val dragonsLoaded by homeViewModel.dragonsLoaded.observeAsState(false)
+    val launchpadsLoaded by homeViewModel.launchpadsLoaded.observeAsState(false)
+
+    if (latestLaunchLoaded && pastLaunchesLoaded && rocketsLoaded && dragonsLoaded && launchpadsLoaded)
+        HomeScreenData(homeViewModel)
+    else
+        CircularProgressIndicator(
+            Modifier
+                .fillMaxSize()
+                .requiredSize(100.dp)
+                .padding(30.dp)
+        )
 }
 
 @ExperimentalMaterialApi
@@ -48,7 +63,6 @@ private fun HomeScreenData(homeViewModel: HomeViewModel) {
 
 @Composable
 private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
-    homeViewModel.fetchLatestLaunch()
     val launch: Launch? by homeViewModel.launch.observeAsState()
 
     Box {
@@ -120,33 +134,18 @@ private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
 @ExperimentalMaterialApi
 @Composable
 private fun ContentSection(homeViewModel: HomeViewModel) {
-    homeViewModel.fetchRockets()
-    homeViewModel.fetchPastLaunches()
-    homeViewModel.fetchDragons()
-
     val rockets: List<Rocket>? by homeViewModel.rockets.observeAsState()
     val pastLaunches: List<Launch>? by homeViewModel.pastLaunches.observeAsState()
     val dragons: List<Dragon>? by homeViewModel.dragons.observeAsState()
+    val launchpads: List<Launchpad>? by homeViewModel.launchpads.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
         pastLaunches?.let { PastLaunchesCarouselSection(it) }
         rockets?.let { RocketsCarouselSection(rockets = it) }
-        Text(
-            "Dragon spaceships",
-            modifier = Modifier.padding(vertical = 20.dp),
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
-        )
         dragons?.let { DragonColumn(it) }
+        launchpads?.let { LaunchpadsCarouselSection(it) }
         Text(
             "Ships",
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
-        )
-        Text(
-            "Landpads",
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
-        )
-        Text(
-            "Historical events",
             style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
         )
         Text(
@@ -281,6 +280,11 @@ private fun PastLaunchesCarouselSection(launches: List<Launch>) {
 @ExperimentalMaterialApi
 @Composable
 private fun DragonColumn(dragons: List<Dragon>) {
+    Text(
+        "Dragon Spaceships",
+        modifier = Modifier.padding(vertical = 20.dp),
+        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
+    )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize(),
@@ -328,6 +332,67 @@ private fun DragonColumn(dragons: List<Dragon>) {
                             color = Color.White
                         ),
                     )
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
+    Column {
+        Text(
+            "Launchpads",
+            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        LazyRow {
+            items(launchpads.reversed()) { launchpad ->
+                Card(
+                    onClick = {},
+                    shape = RoundedCornerShape(15.dp),
+                    elevation = 15.dp,
+                    modifier = Modifier
+                        .size(300.dp, 200.dp)
+                        .padding(end = 20.dp)
+                ) {
+                    Box {
+                        Image(
+                            painter = rememberImagePainter(
+                                data = launchpad.images.large.first(),
+                                builder = {
+                                    crossfade(true)
+                                }
+                            ),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillHeight,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(300.dp, 200.dp)
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.6f)
+                                        ),
+                                        0.0f, Float.POSITIVE_INFINITY
+                                    )
+                                ),
+                        )
+                        Text(
+                            launchpad.full_name,
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(10.dp),
+                            style = MaterialTheme.typography.body1.copy(
+                                fontSize = 17.sp,
+                                color = Color.White
+                            ),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }
