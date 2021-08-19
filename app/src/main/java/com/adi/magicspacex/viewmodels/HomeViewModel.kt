@@ -9,6 +9,7 @@ import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
+import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,11 +24,14 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     private val _pastLaunches = MutableLiveData<List<Launch>?>()
     private val _dragons = MutableLiveData<List<Dragon>?>()
     private val _launchpads = MutableLiveData<List<Launchpad>?>()
+    private val _ships = MutableLiveData<List<Ship>?>()
+
     private val _latestLaunchLoaded = MutableLiveData(false)
     private val _pastLaunchesLoaded = MutableLiveData(false)
     private val _rocketsLoaded = MutableLiveData(false)
     private val _dragonsLoaded = MutableLiveData(false)
     private val _launchpadsLoaded = MutableLiveData(false)
+    private val _shipsLoaded = MutableLiveData(false)
 
     val companyData: LiveData<CompanyInfo?> = _companyData
     val launch: LiveData<Launch?> = _latestLaunch
@@ -35,12 +39,14 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     val pastLaunches: LiveData<List<Launch>?> = _pastLaunches
     val dragons: LiveData<List<Dragon>?> = _dragons
     val launchpads: LiveData<List<Launchpad>?> = _launchpads
+    val ships: LiveData<List<Ship>?> = _ships
 
     val latestLaunchLoaded: LiveData<Boolean> = _latestLaunchLoaded
     val pastLaunchesLoaded: LiveData<Boolean> = _pastLaunchesLoaded
     val rocketsLoaded: LiveData<Boolean> = _rocketsLoaded
     val dragonsLoaded: LiveData<Boolean> = _dragonsLoaded
     val launchpadsLoaded: LiveData<Boolean> = _launchpadsLoaded
+    val shipsLoaded: LiveData<Boolean> = _launchpadsLoaded
 
     init {
         fetchLatestLaunch()
@@ -48,6 +54,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         fetchRockets()
         fetchDragons()
         fetchLaunchpads()
+        fetchShips()
     }
 
     fun fetchCompanyData() {
@@ -109,6 +116,17 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
             try {
                 _launchpads.postValue(repository.fetchLaunchpads())
                 _launchpadsLoaded.postValue(true)
+            } catch (e: Exception) {
+                Timber.e(e, "Error in fetching launchpads data")
+            }
+        }
+    }
+
+    private fun fetchShips() {
+        viewModelScope.launch {
+            try {
+                _ships.postValue(repository.fetchShips())
+                _shipsLoaded.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching launchpads data")
             }

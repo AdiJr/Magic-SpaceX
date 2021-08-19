@@ -5,6 +5,7 @@ import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
+import com.adi.magicspacex.models.ship.Ship
 import retrofit2.http.GET
 
 interface SpacexClient {
@@ -26,4 +27,7 @@ interface SpacexClient {
 
     @GET("v4/launchpads")
     suspend fun fetchLaunchpads(): List<Launchpad>
+
+    @GET("v4/ships")
+    suspend fun fetchShips(): List<Ship>
 }

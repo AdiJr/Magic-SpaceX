@@ -26,6 +26,7 @@ import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
+import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.viewmodels.HomeViewModel
 
 @ExperimentalMaterialApi
@@ -138,16 +139,14 @@ private fun ContentSection(homeViewModel: HomeViewModel) {
     val pastLaunches: List<Launch>? by homeViewModel.pastLaunches.observeAsState()
     val dragons: List<Dragon>? by homeViewModel.dragons.observeAsState()
     val launchpads: List<Launchpad>? by homeViewModel.launchpads.observeAsState()
+    val ships: List<Ship>? by homeViewModel.ships.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
         pastLaunches?.let { PastLaunchesCarouselSection(it) }
         rockets?.let { RocketsCarouselSection(rockets = it) }
         dragons?.let { DragonColumn(it) }
         launchpads?.let { LaunchpadsCarouselSection(it) }
-        Text(
-            "Ships",
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
-        )
+        ships?.let { ShipsCarouselSection(it) }
         Text(
             "About SpaceX",
             style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
@@ -391,6 +390,66 @@ private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
                                 color = Color.White
                             ),
                             maxLines = 1
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun ShipsCarouselSection(ships: List<Ship>) {
+    Column {
+        Text(
+            "Ships",
+            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            modifier = Modifier.padding(vertical = 20.dp),
+        )
+        LazyRow {
+            items(ships.reversed()) { ship ->
+                Card(
+                    onClick = {},
+                    shape = RoundedCornerShape(15.dp),
+                    elevation = 15.dp,
+                    modifier = Modifier
+                        .size(300.dp, 200.dp)
+                        .padding(end = 20.dp)
+                ) {
+                    Box {
+                        Image(
+                            painter = rememberImagePainter(
+                                data = ship.image,
+                                builder = {
+                                    crossfade(true)
+                                }
+                            ),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillHeight,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(300.dp, 200.dp)
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.6f)
+                                        ),
+                                        0.0f, Float.POSITIVE_INFINITY
+                                    )
+                                ),
+                        )
+                        Text(
+                            ship.name,
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(10.dp),
+                            style = MaterialTheme.typography.body1.copy(
+                                fontSize = 17.sp,
+                                color = Color.White
+                            ),
                         )
                     }
                 }
