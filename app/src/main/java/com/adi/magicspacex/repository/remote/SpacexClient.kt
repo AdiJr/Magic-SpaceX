@@ -7,6 +7,7 @@ import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 interface SpacexClient {
 
@@ -33,4 +34,8 @@ interface SpacexClient {
 
     @GET("v5/launches/next")
     suspend fun fetchNextLaunch(): Launch
+
+    @GET("v5/launches/{id}")
+    suspend fun fetchLaunchById(@Path("id") launchId: String): Launch
+
 }

@@ -3,6 +3,7 @@ package com.adi.magicspacex
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -10,14 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.adi.magicspacex.ui.HomeScreen
+import com.adi.magicspacex.ui.LaunchScreen
 import com.adi.magicspacex.ui.SplashScreen
 import com.adi.magicspacex.utils.routing.Routes
 import com.adi.magicspacex.utils.theme.MainAppTheme
 import com.adi.magicspacex.viewmodels.HomeViewModel
+import com.adi.magicspacex.viewmodels.LaunchDetailsViewModel
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,9 +46,14 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalMaterialApi
 @Composable
-fun MyApp() {
+private fun MyApp() {
     MainAppTheme {
-        Surface(color = MaterialTheme.colors.background, modifier = Modifier.statusBarsPadding()) {
+        Surface(
+            color = MaterialTheme.colors.background,
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
             CreateNavHost()
         }
     }
@@ -51,7 +61,7 @@ fun MyApp() {
 
 @ExperimentalMaterialApi
 @Composable
-fun CreateNavHost() {
+private fun CreateNavHost() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -64,7 +74,21 @@ fun CreateNavHost() {
         }
         composable(Routes.Home.route) {
             val homeViewModel = hiltViewModel<HomeViewModel>()
-            HomeScreen(homeViewModel)
+            HomeScreen(
+                homeViewModel,
+                navigateToLaunchDetails =
+                { launchId -> navController.navigate(Routes.LaunchDetails.createRoute(launchId)) })
+        }
+        composable(
+            "${Routes.LaunchDetails.route}/{launchId}",
+            arguments = listOf(navArgument("launchId") {
+                type = NavType.StringType
+            })
+        ) {
+            val launchId = it.arguments!!.getString("launchId")!!
+            val launchDetailsViewModel = hiltViewModel<LaunchDetailsViewModel>()
+            launchDetailsViewModel.fetchLaunchById(launchId)
+            LaunchScreen(launchDetailsViewModel)
         }
     }
 }

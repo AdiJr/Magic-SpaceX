@@ -38,23 +38,27 @@ import com.adi.magicspacex.viewmodels.HomeViewModel
 
 @ExperimentalMaterialApi
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
-    HomeScreenData(homeViewModel)
+fun HomeScreen(
+    homeViewModel: HomeViewModel = viewModel(),
+    navigateToLaunchDetails: (String) -> Unit
+) {
+    HomeScreenData(homeViewModel, navigateToLaunchDetails)
 }
 
 @ExperimentalMaterialApi
 @Composable
-private fun HomeScreenData(homeViewModel: HomeViewModel) {
+private fun HomeScreenData(
+    homeViewModel: HomeViewModel,
+    navigateToLaunchDetails: (String) -> Unit
+) {
     val nextLaunch: Launch? by homeViewModel.nextLaunch.observeAsState()
 
     Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+        Modifier.verticalScroll(rememberScrollState())
     ) {
         if (nextLaunch != null)
             NextLaunchBanner(nextLaunch!!)
-        LatestLaunchSection(homeViewModel)
+        LatestLaunchSection(homeViewModel, navigateToLaunchDetails)
         ContentSection(homeViewModel)
     }
 }
@@ -99,11 +103,14 @@ private fun NextLaunchBanner(nextLaunch: Launch) {
 
 
 @Composable
-private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
+private fun LatestLaunchSection(
+    homeViewModel: HomeViewModel,
+    navigateToLaunchDetails: (String) -> Unit
+) {
     val launch: Launch? by homeViewModel.launch.observeAsState()
 
     LoadingSection(data = launch) {
-        Box {
+        Box(modifier = Modifier.clickable(onClick = { navigateToLaunchDetails(launch!!.id) })) {
             Image(
                 painter = rememberImagePainter(
                     data = launch?.links?.flickr?.original?.first(),
