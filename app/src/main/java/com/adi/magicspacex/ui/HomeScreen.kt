@@ -9,6 +9,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,107 +36,120 @@ import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.viewmodels.HomeViewModel
 
-
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
-    val latestLaunchLoaded by homeViewModel.latestLaunchLoaded.observeAsState(false)
-    val pastLaunchesLoaded by homeViewModel.pastLaunchesLoaded.observeAsState(false)
-    val rocketsLoaded by homeViewModel.rocketsLoaded.observeAsState(false)
-    val dragonsLoaded by homeViewModel.dragonsLoaded.observeAsState(false)
-    val launchpadsLoaded by homeViewModel.launchpadsLoaded.observeAsState(false)
-    val shipsLoaded by homeViewModel.shipsLoaded.observeAsState(false)
-
-    if (latestLaunchLoaded && pastLaunchesLoaded && rocketsLoaded && dragonsLoaded && launchpadsLoaded && shipsLoaded)
-        HomeScreenData(homeViewModel)
-    else
-        CircularProgressIndicator(
-            Modifier
-                .fillMaxSize()
-                .requiredSize(100.dp)
-                .padding(30.dp)
-        )
+    HomeScreenData(homeViewModel)
 }
 
 @ExperimentalMaterialApi
 @Composable
 private fun HomeScreenData(homeViewModel: HomeViewModel) {
+    val nextLaunch: Launch? by homeViewModel.nextLaunch.observeAsState()
+
     Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        if (nextLaunch != null)
+            NextLaunchBanner(nextLaunch!!)
         LatestLaunchSection(homeViewModel)
         ContentSection(homeViewModel)
     }
 }
 
+// TODO: Move those composables to seperate files
+@Composable
+private fun NextLaunchBanner(nextLaunch: Launch) {
+    Surface(
+        color = Color.LightGray,
+        elevation = 15.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .clickable { }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Filled.Notifications,
+                    contentDescription = null,
+                    tint = Color.Black
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    "Upcoming launch: ",
+                    style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
+                )
+                Text(nextLaunch.name)
+            }
+            Icon(
+                Icons.Filled.ArrowForward,
+                contentDescription = null,
+                tint = Color.Black
+            )
+        }
+    }
+}
+
+
 @Composable
 private fun LatestLaunchSection(homeViewModel: HomeViewModel) {
     val launch: Launch? by homeViewModel.launch.observeAsState()
 
-    Box {
-        Image(
-            painter = rememberImagePainter(
-                data = launch?.links?.flickr?.original?.first(),
-                builder = {
-                    crossfade(true)
-                }
-            ),
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier.height(400.dp)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .align(Alignment.BottomCenter)
-                .background(
-                    brush = Brush.verticalGradient(
-                        listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.7f)
-                        ),
-                        0.0f, Float.POSITIVE_INFINITY
-                    )
-                )
-        )
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 30.dp, bottom = 30.dp)
-        ) {
-            Text(
-                "Latest launch",
-                style = MaterialTheme.typography.h1.copy(
-                    color = Color.White,
+    LoadingSection(data = launch) {
+        Box {
+            Image(
+                painter = rememberImagePainter(
+                    data = launch?.links?.flickr?.original?.first(),
+                    builder = {
+                        crossfade(true)
+                    }
                 ),
+                contentDescription = null,
+                contentScale = ContentScale.FillHeight,
+                modifier = Modifier.height(400.dp)
             )
-            launch?.let {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.7f)
+                            ),
+                            0.0f, Float.POSITIVE_INFINITY
+                        )
+                    )
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 30.dp, bottom = 30.dp)
+            ) {
                 Text(
-                    it.name,
-                    style = MaterialTheme.typography.body1.copy(
-                        color = Color.White, fontSize = 22.sp
+                    "Latest launch",
+                    style = MaterialTheme.typography.h1.copy(
+                        color = Color.White,
                     ),
                 )
+                launch?.let {
+                    Text(
+                        it.name,
+                        style = MaterialTheme.typography.body1.copy(
+                            color = Color.White, fontSize = 22.sp
+                        ),
+                    )
+                }
             }
-        }
-        Button(
-            shape = RoundedCornerShape(20.dp),
-            colors = ButtonDefaults.textButtonColors(
-                backgroundColor = Color.White,
-                contentColor = Color.Black
-            ),
-            modifier = Modifier
-                .size(80.dp, 40.dp)
-                .align(Alignment.BottomEnd)
-                .padding(end = 10.dp, bottom = 10.dp),
-            onClick = {}) {
-            Text(
-                "Details",
-                style = MaterialTheme.typography.body1.copy(fontSize = 12.sp)
-            )
         }
     }
 }
@@ -149,12 +165,24 @@ private fun ContentSection(homeViewModel: HomeViewModel) {
     val companyInfo: CompanyInfo? by homeViewModel.companyInfo.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
-        pastLaunches?.let { PastLaunchesCarouselSection(it) }
-        rockets?.let { RocketsCarouselSection(rockets = it) }
-        dragons?.let { DragonColumn(it) }
-        launchpads?.let { LaunchpadsCarouselSection(it) }
-        ships?.let { ShipsCarouselSection(it) }
-        companyInfo?.let { AboutSection(it) }
+        LoadingSection(data = pastLaunches) {
+            PastLaunchesCarouselSection(pastLaunches!!)
+        }
+        LoadingSection(data = rockets) {
+            RocketsCarouselSection(rockets!!)
+        }
+        LoadingSection(data = dragons) {
+            DragonColumn(dragons!!)
+        }
+        LoadingSection(data = launchpads) {
+            LaunchpadsCarouselSection(launchpads!!)
+        }
+        LoadingSection(data = ships) {
+            ShipsCarouselSection(ships!!)
+        }
+        LoadingSection(data = companyInfo) {
+            AboutSection(companyInfo!!)
+        }
     }
 }
 
@@ -538,4 +566,18 @@ fun launchUrl(context: Context, url: String) {
     val browserIntent =
         Intent(Intent.ACTION_VIEW, Uri.parse(url))
     context.startActivity(browserIntent)
+}
+
+@Composable
+private fun LoadingSection(data: Any?, content: @Composable () -> Unit) {
+    if (data != null) {
+        content()
+    } else {
+        CircularProgressIndicator(
+            Modifier
+                .fillMaxSize()
+                .requiredSize(100.dp)
+                .padding(30.dp)
+        )
+    }
 }

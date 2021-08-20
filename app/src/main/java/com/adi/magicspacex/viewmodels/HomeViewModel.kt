@@ -25,13 +25,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     private val _dragons = MutableLiveData<List<Dragon>?>()
     private val _launchpads = MutableLiveData<List<Launchpad>?>()
     private val _ships = MutableLiveData<List<Ship>?>()
-
-    private val _latestLaunchLoaded = MutableLiveData(false)
-    private val _pastLaunchesLoaded = MutableLiveData(false)
-    private val _rocketsLoaded = MutableLiveData(false)
-    private val _dragonsLoaded = MutableLiveData(false)
-    private val _launchpadsLoaded = MutableLiveData(false)
-    private val _shipsLoaded = MutableLiveData(false)
+    private val _nextLaunch = MutableLiveData<Launch?>()
 
     val companyInfo: LiveData<CompanyInfo?> = _companyInfo
     val launch: LiveData<Launch?> = _latestLaunch
@@ -40,22 +34,17 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
     val dragons: LiveData<List<Dragon>?> = _dragons
     val launchpads: LiveData<List<Launchpad>?> = _launchpads
     val ships: LiveData<List<Ship>?> = _ships
-
-    val latestLaunchLoaded: LiveData<Boolean> = _latestLaunchLoaded
-    val pastLaunchesLoaded: LiveData<Boolean> = _pastLaunchesLoaded
-    val rocketsLoaded: LiveData<Boolean> = _rocketsLoaded
-    val dragonsLoaded: LiveData<Boolean> = _dragonsLoaded
-    val launchpadsLoaded: LiveData<Boolean> = _launchpadsLoaded
-    val shipsLoaded: LiveData<Boolean> = _launchpadsLoaded
+    val nextLaunch: LiveData<Launch?> = _nextLaunch
 
     init {
-        fetchCompanyInfo()
         fetchLatestLaunch()
         fetchPastLaunches()
         fetchRockets()
         fetchDragons()
         fetchLaunchpads()
         fetchShips()
+        fetchCompanyInfo()
+        fetchNextLaunch()
     }
 
     private fun fetchCompanyInfo() {
@@ -72,7 +61,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         viewModelScope.launch {
             try {
                 _latestLaunch.postValue(repository.fetchLatestLaunch())
-                _latestLaunchLoaded.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching latest launch data")
             }
@@ -83,7 +71,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         viewModelScope.launch {
             try {
                 _rockets.postValue(repository.fetchRockets())
-                _rocketsLoaded.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching rockets data")
             }
@@ -94,7 +81,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         viewModelScope.launch {
             try {
                 _pastLaunches.postValue(repository.fetchPastLaunches())
-                _pastLaunchesLoaded.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching past launches data")
             }
@@ -105,7 +91,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         viewModelScope.launch {
             try {
                 _dragons.postValue(repository.fetchDragons())
-                _dragonsLoaded.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching past launches data")
             }
@@ -116,7 +101,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         viewModelScope.launch {
             try {
                 _launchpads.postValue(repository.fetchLaunchpads())
-                _launchpadsLoaded.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching launchpads data")
             }
@@ -127,7 +111,16 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
         viewModelScope.launch {
             try {
                 _ships.postValue(repository.fetchShips())
-                _shipsLoaded.postValue(true)
+            } catch (e: Exception) {
+                Timber.e(e, "Error in fetching launchpads data")
+            }
+        }
+    }
+
+    private fun fetchNextLaunch() {
+        viewModelScope.launch {
+            try {
+                _nextLaunch.postValue(repository.fetchNextLaunch())
             } catch (e: Exception) {
                 Timber.e(e, "Error in fetching launchpads data")
             }
