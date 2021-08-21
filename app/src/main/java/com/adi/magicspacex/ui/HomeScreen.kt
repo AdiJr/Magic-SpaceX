@@ -1,8 +1,6 @@
 package com.adi.magicspacex.ui
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -34,21 +32,14 @@ import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
+import com.adi.magicspacex.utils.ui.LoadingSection
+import com.adi.magicspacex.utils.ui.launchUrl
 import com.adi.magicspacex.viewmodels.HomeViewModel
 
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel(),
-    navigateToLaunchDetails: (String) -> Unit
-) {
-    HomeScreenData(homeViewModel, navigateToLaunchDetails)
-}
-
-@ExperimentalMaterialApi
-@Composable
-private fun HomeScreenData(
-    homeViewModel: HomeViewModel,
     navigateToLaunchDetails: (String) -> Unit
 ) {
     val nextLaunch: Launch? by homeViewModel.nextLaunch.observeAsState()
@@ -567,24 +558,4 @@ private fun SocialImageLink(context: Context, imageUrl: String, url: String) {
                 launchUrl(context, url)
             }
     )
-}
-
-fun launchUrl(context: Context, url: String) {
-    val browserIntent =
-        Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(browserIntent)
-}
-
-@Composable
-private fun LoadingSection(data: Any?, content: @Composable () -> Unit) {
-    if (data != null) {
-        content()
-    } else {
-        CircularProgressIndicator(
-            Modifier
-                .fillMaxSize()
-                .requiredSize(100.dp)
-                .padding(30.dp)
-        )
-    }
 }
