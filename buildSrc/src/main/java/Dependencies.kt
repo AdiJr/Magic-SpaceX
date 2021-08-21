@@ -9,8 +9,10 @@ object Libs {
     const val ktLint = "com.pinterest:ktlint:${Versions.ktLint}"
 
     object Accompanist {
-        private const val version = "0.15.0"
+        private const val version = "0.17.0"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
+        const val pager = "com.google.accompanist:accompanist-pager:$version"
+        const val pagerIndicators = "com.google.accompanist:accompanist-pager-indicators:$version"
     }
 
     object Kotlin {

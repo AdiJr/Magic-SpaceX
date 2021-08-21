@@ -26,7 +26,12 @@ import com.adi.magicspacex.utils.ui.LoadingSection
 import com.adi.magicspacex.utils.ui.formatStringToLocalDate
 import com.adi.magicspacex.utils.ui.launchUrl
 import com.adi.magicspacex.viewmodels.LaunchDetailsViewModel
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 
+@ExperimentalPagerApi
 @Composable
 fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel()) {
     val launch: Launch? by detailsViewModel.launch.observeAsState()
@@ -35,18 +40,33 @@ fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel()) {
     Column(
         Modifier.verticalScroll(rememberScrollState())
     ) {
-        // TODO: change to pager
         LoadingSection(launch) {
-            Image(
-                painter = rememberImagePainter(
-                    data = launch!!.links.flickr.original[1],
-                    builder = {
-                        crossfade(true)
-                    }
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
+            val imageUrls = launch!!.links.flickr.original
+            val pagerState = rememberPagerState(
+                pageCount = imageUrls.size,
+            )
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier.height(400.dp)
+            ) {
+                Image(
+                    painter = rememberImagePainter(
+                        data = imageUrls[it],
+                        builder = {
+                            crossfade(true)
+                        }
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                )
+            }
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                activeColor = Color.Blue,
+                inactiveColor = Color.Black,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
             )
             Spacer(Modifier.height(20.dp))
             Column(Modifier.padding(horizontal = 20.dp)) {
@@ -87,7 +107,7 @@ fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel()) {
                         backgroundColor = Color.Red,
                     ),
                     modifier = Modifier
-                        .padding(bottom = 60.dp)
+                        .padding(bottom = 20.dp)
                         .fillMaxWidth()
                         .size(300.dp, 50.dp)
                 ) {

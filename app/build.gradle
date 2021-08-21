@@ -56,6 +56,8 @@ dependencies {
     implementation Libs.Kotlin.Coroutines.android
 
     implementation Libs.Accompanist.insets
+    implementation Libs.Accompanist.pager
+    implementation Libs.Accompanist.pagerIndicators
 
     implementation Libs.Lottie.lottieCompose
 

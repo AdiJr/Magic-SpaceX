@@ -25,10 +25,12 @@ import com.adi.magicspacex.viewmodels.HomeViewModel
 import com.adi.magicspacex.viewmodels.LaunchDetailsViewModel
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalPagerApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
 private fun MyApp() {
@@ -59,6 +62,7 @@ private fun MyApp() {
     }
 }
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
 private fun CreateNavHost() {
