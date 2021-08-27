@@ -22,4 +22,11 @@ class Repository @Inject constructor(private val spacexService: SpacexService) {
     suspend fun fetchNextLaunch() = spacexService.fetchNextLaunch()
 
     suspend fun fetchLaunchById(launchId: String) = spacexService.fetchLaunchById(launchId)
+
+    suspend fun fetchRocketById(rocketId: String) = spacexService.fetchRocketById(rocketId)
+
+    suspend fun fetchLaunchpadById(launchpadId: String) =
+        spacexService.fetchLaunchpadById(launchpadId)
+
+    suspend fun fetchShipById(shipId: String) = spacexService.fetchShipById(shipId)
 }

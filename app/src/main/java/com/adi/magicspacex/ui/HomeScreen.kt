@@ -45,7 +45,9 @@ fun HomeScreen(
     val nextLaunch: Launch? by homeViewModel.nextLaunch.observeAsState()
 
     Column(
-        Modifier.verticalScroll(rememberScrollState())
+        Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(top = 25.dp)
     ) {
         if (nextLaunch != null)
             NextLaunchBanner(nextLaunch!!)

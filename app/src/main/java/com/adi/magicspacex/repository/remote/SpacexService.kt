@@ -21,4 +21,11 @@ class SpacexService @Inject constructor(private val spacexClient: SpacexClient) 
     suspend fun fetchNextLaunch() = spacexClient.fetchNextLaunch()
 
     suspend fun fetchLaunchById(launchId: String) = spacexClient.fetchLaunchById(launchId)
+
+    suspend fun fetchRocketById(rocketId: String) = spacexClient.fetchRocketById(rocketId)
+
+    suspend fun fetchLaunchpadById(launchpadId: String) =
+        spacexClient.fetchLaunchpadById(launchpadId)
+
+    suspend fun fetchShipById(shipId: String) = spacexClient.fetchShipById(shipId)
 }

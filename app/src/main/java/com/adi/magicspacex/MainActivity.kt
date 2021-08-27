@@ -1,6 +1,7 @@
 package com.adi.magicspacex
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,11 @@ class MainActivity : ComponentActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -91,8 +97,7 @@ private fun CreateNavHost() {
         ) {
             val launchId = it.arguments!!.getString("launchId")!!
             val launchDetailsViewModel = hiltViewModel<LaunchDetailsViewModel>()
-            launchDetailsViewModel.fetchLaunchById(launchId)
-            LaunchScreen(launchDetailsViewModel)
+            LaunchScreen(launchDetailsViewModel, launchId)
         }
     }
 }

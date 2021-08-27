@@ -38,4 +38,12 @@ interface SpacexClient {
     @GET("v5/launches/{id}")
     suspend fun fetchLaunchById(@Path("id") launchId: String): Launch
 
+    @GET("v4/rockets/{id}")
+    suspend fun fetchRocketById(@Path("id") rocketId: String): Rocket
+
+    @GET("v4/launchpads/{id}")
+    suspend fun fetchLaunchpadById(@Path("id") launchpadId: String): Launchpad
+
+    @GET("v4/ships/{id}")
+    suspend fun fetchShipById(@Path("id") shipId: String): Ship
 }
