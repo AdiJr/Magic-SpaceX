@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,9 +33,12 @@ import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
+import com.adi.magicspacex.utils.formatStringToLocalDate
+import com.adi.magicspacex.utils.launchUrl
+import com.adi.magicspacex.utils.showTimeToNextLaunch
 import com.adi.magicspacex.utils.ui.LoadingSection
-import com.adi.magicspacex.utils.ui.launchUrl
 import com.adi.magicspacex.viewmodels.HomeViewModel
+import java.util.*
 
 @ExperimentalMaterialApi
 @Composable
@@ -49,47 +53,81 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState())
             .padding(top = 25.dp)
     ) {
-        if (nextLaunch != null)
-            NextLaunchBanner(nextLaunch!!)
+        if (nextLaunch != null && nextLaunch!!.id != null)
+            NextLaunchBanner(nextLaunch!!, navigateToLaunchDetails)
         LatestLaunchSection(homeViewModel, navigateToLaunchDetails)
-        ContentSection(homeViewModel)
+        ContentSection(homeViewModel, navigateToLaunchDetails)
     }
 }
 
 // TODO: Move those composables to seperate files
 @Composable
-private fun NextLaunchBanner(nextLaunch: Launch) {
+private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Unit) {
+    val context = LocalContext.current
+    val isLaunchDateAfterCurrent =
+        formatStringToLocalDate(nextLaunch.date_utc).after(Calendar.getInstance().time)
+
     Surface(
-        color = Color.LightGray,
-        elevation = 15.dp,
+        color = if (isLaunchDateAfterCurrent) Color.LightGray else Color.Red,
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
-            .clickable { }
+            .clickable {
+                if (!isLaunchDateAfterCurrent) launchUrl(
+                    context,
+                    nextLaunch.links.webcast
+                ) else navigateToLaunchDetails(
+                    nextLaunch.id
+                )
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (isLaunchDateAfterCurrent) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Notifications,
+                        contentDescription = null,
+                        tint = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        "Next launch: ",
+                        style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
+                    )
+                    Text(showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
+                    Text(nextLaunch.name)
+                }
                 Icon(
-                    Icons.Filled.Notifications,
+                    Icons.Filled.ArrowForward,
                     contentDescription = null,
                     tint = Color.Black
                 )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    "Upcoming launch: ",
-                    style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "LIVE: ",
+                        style = MaterialTheme.typography.h1.copy(
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        nextLaunch.name, style = MaterialTheme.typography.h1.copy(
+                            fontSize = 15.sp,
+                            color = Color.White
+                        )
+                    )
+                }
+                Icon(
+                    Icons.Filled.PlayArrow,
+                    contentDescription = null,
+                    tint = Color.White
                 )
-                Text(nextLaunch.name)
             }
-            Icon(
-                Icons.Filled.ArrowForward,
-                contentDescription = null,
-                tint = Color.Black
-            )
         }
     }
 }
@@ -156,7 +194,10 @@ private fun LatestLaunchSection(
 
 @ExperimentalMaterialApi
 @Composable
-private fun ContentSection(homeViewModel: HomeViewModel) {
+private fun ContentSection(
+    homeViewModel: HomeViewModel,
+    navigateToLaunchDetails: (String) -> Unit
+) {
     val rockets: List<Rocket>? by homeViewModel.rockets.observeAsState()
     val pastLaunches: List<Launch>? by homeViewModel.pastLaunches.observeAsState()
     val dragons: List<Dragon>? by homeViewModel.dragons.observeAsState()
@@ -166,7 +207,7 @@ private fun ContentSection(homeViewModel: HomeViewModel) {
 
     Column(Modifier.padding(horizontal = 20.dp)) {
         LoadingSection(data = pastLaunches) {
-            PastLaunchesCarouselSection(pastLaunches!!)
+            PastLaunchesCarouselSection(pastLaunches!!, navigateToLaunchDetails)
         }
         LoadingSection(data = rockets) {
             RocketsCarouselSection(rockets!!)
@@ -248,7 +289,10 @@ private fun RocketsCarouselSection(rockets: List<Rocket>) {
 
 @ExperimentalMaterialApi
 @Composable
-private fun PastLaunchesCarouselSection(launches: List<Launch>) {
+private fun PastLaunchesCarouselSection(
+    launches: List<Launch>,
+    navigateToLaunchDetails: (String) -> Unit
+) {
     Column(Modifier.padding(vertical = 20.dp)) {
         Text(
             "Past missions",
@@ -260,7 +304,7 @@ private fun PastLaunchesCarouselSection(launches: List<Launch>) {
                 launches.reversed().subList(1, launches.size)
                     .filter { it.links.flickr.original.isNotEmpty() }) { launch ->
                 Card(
-                    onClick = {},
+                    onClick = { navigateToLaunchDetails(launch.id) },
                     shape = RoundedCornerShape(15.dp),
                     elevation = 15.dp,
                     modifier = Modifier

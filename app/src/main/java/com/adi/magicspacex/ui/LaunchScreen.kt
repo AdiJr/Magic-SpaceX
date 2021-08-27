@@ -28,9 +28,9 @@ import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
+import com.adi.magicspacex.utils.formatStringToLocalDateString
+import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.ui.LoadingSection
-import com.adi.magicspacex.utils.ui.formatStringToLocalDate
-import com.adi.magicspacex.utils.ui.launchUrl
 import com.adi.magicspacex.viewmodels.LaunchDetailsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -57,13 +57,14 @@ fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel(), launchI
             val launchpad: Launchpad? by detailsViewModel.launchpad.observeAsState()
             val ship: Ship? by detailsViewModel.ship.observeAsState()
 
-            PagerSection(
-                launch!!,
-                Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(16.dp),
-            )
-            Spacer(Modifier.height(20.dp))
+            if (launch!!.links.flickr.original.isNotEmpty())
+                PagerSection(
+                    launch!!,
+                    Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(16.dp),
+                )
+            Spacer(Modifier.height(30.dp))
             Column(Modifier.padding(horizontal = 20.dp)) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,7 +73,7 @@ fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel(), launchI
                 ) {
                     Text(launch!!.name, style = MaterialTheme.typography.h1.copy(fontSize = 20.sp))
                     Text(
-                        formatStringToLocalDate(launch!!.date_utc),
+                        formatStringToLocalDateString(launch!!.date_utc),
                         style = MaterialTheme.typography.body1.copy(fontSize = 16.sp)
                     )
                     Image(
@@ -104,7 +105,8 @@ fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel(), launchI
                     CardSection("Ship", ship!!.name, ship!!.image)
                 }
                 Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 20.dp))
-                WebcastButton(context, launch!!.links.webcast)
+                if (launch!!.links.webcast != null)
+                    WebcastButton(context, launch!!.links.webcast)
             }
         }
     }
