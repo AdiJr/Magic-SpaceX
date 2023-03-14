@@ -19,8 +19,6 @@ out/
 
 # Gradle files
 .gradle/
-build/
-/buildSrc/build/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -77,3 +75,6 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
+
+# build files
+/buildSrc/build/
