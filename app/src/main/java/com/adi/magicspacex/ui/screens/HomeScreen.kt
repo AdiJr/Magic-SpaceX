@@ -1,4 +1,4 @@
-package com.adi.magicspacex.ui
+package com.adi.magicspacex.ui.screens
 
 import android.content.Context
 import androidx.compose.foundation.*
@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -25,7 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.adi.magicspacex.models.company_info.CompanyInfo
 import com.adi.magicspacex.models.dragon.Dragon
@@ -33,30 +34,44 @@ import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
+import com.adi.magicspacex.ui.viewmodels.HomeViewModel
 import com.adi.magicspacex.utils.formatStringToLocalDate
 import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.showTimeToNextLaunch
 import com.adi.magicspacex.utils.ui.LoadingSection
-import com.adi.magicspacex.viewmodels.HomeViewModel
 import java.util.*
 
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = viewModel(),
-    navigateToLaunchDetails: (String) -> Unit
+    homeViewModel: HomeViewModel = hiltViewModel(), navigateToLaunchDetails: (String) -> Unit
 ) {
-    val nextLaunch: Launch? by homeViewModel.nextLaunch.observeAsState()
+    val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+    val latestLaunch = homeUiState.latestLaunch
+    val nextLaunch = homeUiState.nextLaunch
 
-    Column(
-        Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(top = 25.dp)
-    ) {
-        if (nextLaunch != null && nextLaunch!!.id != null)
-            NextLaunchBanner(nextLaunch!!, navigateToLaunchDetails)
-        LatestLaunchSection(homeViewModel, navigateToLaunchDetails)
-        ContentSection(homeViewModel, navigateToLaunchDetails)
+    LoadingSection(isLoading = homeUiState.isLoading) {
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(top = 25.dp)
+        ) {
+            if (nextLaunch != null) NextLaunchBanner(nextLaunch, navigateToLaunchDetails)
+            if (latestLaunch != null) {
+                LatestLaunchSection(latestLaunch, navigateToLaunchDetails)
+            }
+            homeUiState.companyInfo?.let {
+                ContentSection(
+                    homeUiState.rockets,
+                    homeUiState.pastLaunches,
+                    homeUiState.dragons,
+                    homeUiState.launchpads,
+                    homeUiState.ships,
+                    it,
+                    navigateToLaunchDetails,
+                )
+            }
+        }
     }
 }
 
@@ -67,20 +82,17 @@ private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (Strin
     val isLaunchDateAfterCurrent =
         formatStringToLocalDate(nextLaunch.date_utc).after(Calendar.getInstance().time)
 
-    Surface(
-        color = if (isLaunchDateAfterCurrent) Color.LightGray else Color.Red,
+    Surface(color = if (isLaunchDateAfterCurrent) Color.LightGray else Color.Red,
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
             .clickable {
                 if (!isLaunchDateAfterCurrent) launchUrl(
-                    context,
-                    nextLaunch.links.webcast
+                    context, nextLaunch.links.webcast
                 ) else navigateToLaunchDetails(
                     nextLaunch.id
                 )
-            }
-    ) {
+            }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,37 +107,29 @@ private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (Strin
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        "Next launch: ",
-                        style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
+                        "Next launch: ", style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
                     )
                     Text(showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
                     Text(nextLaunch.name)
                 }
                 Icon(
-                    Icons.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = Color.Black
+                    Icons.Filled.ArrowForward, contentDescription = null, tint = Color.Black
                 )
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "LIVE: ",
-                        style = MaterialTheme.typography.h1.copy(
-                            fontSize = 15.sp,
-                            color = Color.White
+                        "LIVE: ", style = MaterialTheme.typography.h1.copy(
+                            fontSize = 15.sp, color = Color.White
                         )
                     )
                     Text(
                         nextLaunch.name, style = MaterialTheme.typography.h1.copy(
-                            fontSize = 15.sp,
-                            color = Color.White
+                            fontSize = 15.sp, color = Color.White
                         )
                     )
                 }
                 Icon(
-                    Icons.Filled.PlayArrow,
-                    contentDescription = null,
-                    tint = Color.White
+                    Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White
                 )
             }
         }
@@ -133,61 +137,54 @@ private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (Strin
 }
 
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun LatestLaunchSection(
-    homeViewModel: HomeViewModel,
-    navigateToLaunchDetails: (String) -> Unit
+    launch: Launch,
+    navigateToLaunchDetails: (String) -> Unit,
 ) {
-    val launch: Launch? by homeViewModel.launch.observeAsState()
-
-    LoadingSection(data = launch) {
-        Box(modifier = Modifier.clickable(onClick = { navigateToLaunchDetails(launch!!.id) })) {
+    Box(modifier = Modifier.clickable(onClick = { navigateToLaunchDetails(launch.id) })) {
+        if (launch.links.flickr.original.isNotEmpty())
             Image(
-                painter = rememberImagePainter(
-                    data = launch?.links?.flickr?.original?.first(),
+                painter = rememberImagePainter(data = launch.links.flickr.original.first(),
                     builder = {
                         crossfade(true)
-                    }
-                ),
+                    }),
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier.height(400.dp)
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .align(Alignment.BottomCenter)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.7f)
-                            ),
-                            0.0f, Float.POSITIVE_INFINITY
-                        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .align(Alignment.BottomCenter)
+                .background(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.Transparent, Color.Black.copy(alpha = 0.7f)
+                        ), 0.0f, Float.POSITIVE_INFINITY
                     )
-            )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 30.dp, bottom = 30.dp)
-            ) {
-                Text(
-                    "Latest launch",
-                    style = MaterialTheme.typography.h1.copy(
-                        color = Color.White,
-                    ),
                 )
-                launch?.let {
-                    Text(
-                        it.name,
-                        style = MaterialTheme.typography.body1.copy(
-                            color = Color.White, fontSize = 22.sp
-                        ),
-                    )
-                }
-            }
+        )
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 30.dp, bottom = 30.dp)
+        ) {
+            Text(
+                "Latest launch",
+                style = MaterialTheme.typography.h1.copy(
+                    color = Color.White,
+                ),
+            )
+            Text(
+                launch.name,
+                style = MaterialTheme.typography.body1.copy(
+                    color = Color.White, fontSize = 22.sp
+                ),
+            )
+
         }
     }
 }
@@ -195,38 +192,26 @@ private fun LatestLaunchSection(
 @ExperimentalMaterialApi
 @Composable
 private fun ContentSection(
-    homeViewModel: HomeViewModel,
-    navigateToLaunchDetails: (String) -> Unit
+    rockets: List<Rocket>,
+    pastLaunches: List<Launch>,
+    dragons: List<Dragon>,
+    launchpads: List<Launchpad>,
+    ships: List<Ship>,
+    companyInfo: CompanyInfo,
+    navigateToLaunchDetails: (String) -> Unit,
 ) {
-    val rockets: List<Rocket>? by homeViewModel.rockets.observeAsState()
-    val pastLaunches: List<Launch>? by homeViewModel.pastLaunches.observeAsState()
-    val dragons: List<Dragon>? by homeViewModel.dragons.observeAsState()
-    val launchpads: List<Launchpad>? by homeViewModel.launchpads.observeAsState()
-    val ships: List<Ship>? by homeViewModel.ships.observeAsState()
-    val companyInfo: CompanyInfo? by homeViewModel.companyInfo.observeAsState()
 
     Column(Modifier.padding(horizontal = 20.dp)) {
-        LoadingSection(data = pastLaunches) {
-            PastLaunchesCarouselSection(pastLaunches!!, navigateToLaunchDetails)
-        }
-        LoadingSection(data = rockets) {
-            RocketsCarouselSection(rockets!!)
-        }
-        LoadingSection(data = dragons) {
-            DragonColumn(dragons!!)
-        }
-        LoadingSection(data = launchpads) {
-            LaunchpadsCarouselSection(launchpads!!)
-        }
-        LoadingSection(data = ships) {
-            ShipsCarouselSection(ships!!)
-        }
-        LoadingSection(data = companyInfo) {
-            AboutSection(companyInfo!!)
-        }
+        PastLaunchesCarouselSection(pastLaunches, navigateToLaunchDetails)
+        RocketsCarouselSection(rockets)
+        DragonColumn(dragons)
+        LaunchpadsCarouselSection(launchpads)
+        ShipsCarouselSection(ships)
+        AboutSection(companyInfo)
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun RocketsCarouselSection(rockets: List<Rocket>) {
@@ -248,12 +233,10 @@ private fun RocketsCarouselSection(rockets: List<Rocket>) {
                 ) {
                     Box {
                         Image(
-                            painter = rememberImagePainter(
-                                data = rocket.flickr_images.first(),
+                            painter = rememberImagePainter(data = rocket.flickr_images.first(),
                                 builder = {
                                     crossfade(true)
-                                }
-                            ),
+                                }),
                             contentDescription = null,
                             contentScale = ContentScale.FillHeight,
                         )
@@ -263,10 +246,8 @@ private fun RocketsCarouselSection(rockets: List<Rocket>) {
                                 .background(
                                     brush = Brush.verticalGradient(
                                         listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.6f)
-                                        ),
-                                        0.0f, Float.POSITIVE_INFINITY
+                                            Color.Transparent, Color.Black.copy(alpha = 0.6f)
+                                        ), 0.0f, Float.POSITIVE_INFINITY
                                     )
                                 ),
                         )
@@ -276,8 +257,7 @@ private fun RocketsCarouselSection(rockets: List<Rocket>) {
                                 .align(Alignment.BottomStart)
                                 .padding(10.dp),
                             style = MaterialTheme.typography.body1.copy(
-                                fontSize = 17.sp,
-                                color = Color.White
+                                fontSize = 17.sp, color = Color.White
                             ),
                         )
                     }
@@ -287,11 +267,11 @@ private fun RocketsCarouselSection(rockets: List<Rocket>) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun PastLaunchesCarouselSection(
-    launches: List<Launch>,
-    navigateToLaunchDetails: (String) -> Unit
+    launches: List<Launch>, navigateToLaunchDetails: (String) -> Unit
 ) {
     Column(Modifier.padding(vertical = 20.dp)) {
         Text(
@@ -300,9 +280,8 @@ private fun PastLaunchesCarouselSection(
             modifier = Modifier.padding(bottom = 10.dp)
         )
         LazyRow {
-            items(
-                launches.reversed().subList(1, launches.size)
-                    .filter { it.links.flickr.original.isNotEmpty() }) { launch ->
+            items(launches.reversed().subList(1, launches.size)
+                .filter { it.links.flickr.original.isNotEmpty() }) { launch ->
                 Card(
                     onClick = { navigateToLaunchDetails(launch.id) },
                     shape = RoundedCornerShape(15.dp),
@@ -313,12 +292,10 @@ private fun PastLaunchesCarouselSection(
                 ) {
                     Box {
                         Image(
-                            painter = rememberImagePainter(
-                                data = launch.links.flickr.original.first(),
+                            painter = rememberImagePainter(data = launch.links.flickr.original.first(),
                                 builder = {
                                     crossfade(true)
-                                }
-                            ),
+                                }),
                             contentDescription = null,
                             contentScale = ContentScale.FillHeight,
                         )
@@ -328,10 +305,8 @@ private fun PastLaunchesCarouselSection(
                                 .background(
                                     brush = Brush.verticalGradient(
                                         listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.6f)
-                                        ),
-                                        0.0f, Float.POSITIVE_INFINITY
+                                            Color.Transparent, Color.Black.copy(alpha = 0.6f)
+                                        ), 0.0f, Float.POSITIVE_INFINITY
                                     )
                                 ),
                         )
@@ -341,8 +316,7 @@ private fun PastLaunchesCarouselSection(
                                 .align(Alignment.BottomStart)
                                 .padding(10.dp),
                             style = MaterialTheme.typography.body1.copy(
-                                fontSize = 17.sp,
-                                color = Color.White
+                                fontSize = 17.sp, color = Color.White
                             ),
                         )
                     }
@@ -352,6 +326,7 @@ private fun PastLaunchesCarouselSection(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun DragonColumn(dragons: List<Dragon>) {
@@ -375,12 +350,10 @@ private fun DragonColumn(dragons: List<Dragon>) {
             ) {
                 Box {
                     Image(
-                        painter = rememberImagePainter(
-                            data = dragon.flickr_images.first(),
+                        painter = rememberImagePainter(data = dragon.flickr_images.first(),
                             builder = {
                                 crossfade(true)
-                            }
-                        ),
+                            }),
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
                         modifier = Modifier.scale(1.5f)
@@ -391,20 +364,16 @@ private fun DragonColumn(dragons: List<Dragon>) {
                             .background(
                                 brush = Brush.verticalGradient(
                                     listOf(
-                                        Color.Transparent,
-                                        Color.Black.copy(alpha = 0.8f)
-                                    ),
-                                    0.0f, Float.POSITIVE_INFINITY
+                                        Color.Transparent, Color.Black.copy(alpha = 0.8f)
+                                    ), 0.0f, Float.POSITIVE_INFINITY
                                 )
                             ),
                     )
                     Text(
                         dragon.name,
-                        modifier = Modifier
-                            .align(Alignment.Center),
+                        modifier = Modifier.align(Alignment.Center),
                         style = MaterialTheme.typography.h1.copy(
-                            fontSize = 22.sp,
-                            color = Color.White
+                            fontSize = 22.sp, color = Color.White
                         ),
                     )
                 }
@@ -413,6 +382,7 @@ private fun DragonColumn(dragons: List<Dragon>) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
@@ -434,12 +404,10 @@ private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
                 ) {
                     Box {
                         Image(
-                            painter = rememberImagePainter(
-                                data = launchpad.images.large.first(),
+                            painter = rememberImagePainter(data = launchpad.images.large.first(),
                                 builder = {
                                     crossfade(true)
-                                }
-                            ),
+                                }),
                             contentDescription = null,
                             contentScale = ContentScale.FillHeight,
                         )
@@ -449,10 +417,8 @@ private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
                                 .background(
                                     brush = Brush.verticalGradient(
                                         listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.6f)
-                                        ),
-                                        0.0f, Float.POSITIVE_INFINITY
+                                            Color.Transparent, Color.Black.copy(alpha = 0.6f)
+                                        ), 0.0f, Float.POSITIVE_INFINITY
                                     )
                                 ),
                         )
@@ -462,8 +428,7 @@ private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
                                 .align(Alignment.BottomStart)
                                 .padding(10.dp),
                             style = MaterialTheme.typography.body1.copy(
-                                fontSize = 17.sp,
-                                color = Color.White
+                                fontSize = 17.sp, color = Color.White
                             ),
                             maxLines = 1
                         )
@@ -474,6 +439,7 @@ private fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun ShipsCarouselSection(ships: List<Ship>) {
@@ -495,12 +461,9 @@ private fun ShipsCarouselSection(ships: List<Ship>) {
                 ) {
                     Box {
                         Image(
-                            painter = rememberImagePainter(
-                                data = ship.image,
-                                builder = {
-                                    crossfade(true)
-                                }
-                            ),
+                            painter = rememberImagePainter(data = ship.image, builder = {
+                                crossfade(true)
+                            }),
                             contentDescription = null,
                             contentScale = ContentScale.FillHeight,
                         )
@@ -510,10 +473,8 @@ private fun ShipsCarouselSection(ships: List<Ship>) {
                                 .background(
                                     brush = Brush.verticalGradient(
                                         listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.6f)
-                                        ),
-                                        0.0f, Float.POSITIVE_INFINITY
+                                            Color.Transparent, Color.Black.copy(alpha = 0.6f)
+                                        ), 0.0f, Float.POSITIVE_INFINITY
                                     )
                                 ),
                         )
@@ -523,8 +484,7 @@ private fun ShipsCarouselSection(ships: List<Ship>) {
                                 .align(Alignment.BottomStart)
                                 .padding(10.dp),
                             style = MaterialTheme.typography.body1.copy(
-                                fontSize = 17.sp,
-                                color = Color.White
+                                fontSize = 17.sp, color = Color.White
                             ),
                         )
                     }
@@ -546,21 +506,20 @@ fun AboutSection(companyInfo: CompanyInfo) {
     Text(
         companyInfo.summary,
         style = MaterialTheme.typography.body1.copy(
-            fontSize = 15.sp,
-            textAlign = TextAlign.Justify
+            fontSize = 15.sp, textAlign = TextAlign.Justify
         ),
     )
     OutlinedButton(onClick = { }) {
         Text(
             "See more",
             style = MaterialTheme.typography.h1.copy(
-                fontSize = 15.sp,
-                textDecoration = TextDecoration.Underline
+                fontSize = 15.sp, textDecoration = TextDecoration.Underline
             ),
         )
     }
     Text(
-        "Links", style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+        "Links",
+        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
         modifier = Modifier
             .padding(vertical = 20.dp)
             .fillMaxWidth()
@@ -588,20 +547,14 @@ fun AboutSection(companyInfo: CompanyInfo) {
     Spacer(Modifier.height(20.dp))
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun SocialImageLink(context: Context, imageUrl: String, url: String) {
-    Image(
-        painter = rememberImagePainter(
-            data = imageUrl,
-            builder = {
-                crossfade(true)
-            }
-        ),
-        contentDescription = null,
-        modifier = Modifier
-            .size(40.dp)
-            .clickable {
-                launchUrl(context, url)
-            }
-    )
+    Image(painter = rememberImagePainter(data = imageUrl, builder = {
+        crossfade(true)
+    }), contentDescription = null, modifier = Modifier
+        .size(40.dp)
+        .clickable {
+            launchUrl(context, url)
+        })
 }

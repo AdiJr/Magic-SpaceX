@@ -9,15 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoadingSection(data: Any?, content: @Composable () -> Unit) {
-    if (data != null) {
-        content()
-    } else {
+fun LoadingSection(isLoading: Boolean, content: @Composable () -> Unit) {
+    if (isLoading) {
         CircularProgressIndicator(
             Modifier
                 .fillMaxSize()
                 .requiredSize(100.dp)
                 .padding(30.dp)
         )
+    } else {
+        content()
     }
 }
