@@ -44,7 +44,8 @@ import java.util.*
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel(), navigateToLaunchDetails: (String) -> Unit
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    navigateToLaunchDetails: (String) -> Unit,
 ) {
     val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val latestLaunch = homeUiState.latestLaunch
@@ -80,16 +81,16 @@ fun HomeScreen(
 private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Unit) {
     val context = LocalContext.current
     val isLaunchDateAfterCurrent =
-        formatStringToLocalDate(nextLaunch.date_utc).after(Calendar.getInstance().time)
+        nextLaunch.date_utc?.let { formatStringToLocalDate(it).after(Calendar.getInstance().time) }
 
-    Surface(color = if (isLaunchDateAfterCurrent) Color.LightGray else Color.Red,
+    Surface(color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) Color.LightGray else Color.Red,
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
             .clickable {
-                if (!isLaunchDateAfterCurrent) launchUrl(
+                if (isLaunchDateAfterCurrent != null && !isLaunchDateAfterCurrent && nextLaunch.links != null) launchUrl(
                     context, nextLaunch.links.webcast
-                ) else navigateToLaunchDetails(
+                ) else if (nextLaunch.id != null) navigateToLaunchDetails(
                     nextLaunch.id
                 )
             }) {
@@ -98,7 +99,7 @@ private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (Strin
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            if (isLaunchDateAfterCurrent) {
+            if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.Notifications,
@@ -110,7 +111,8 @@ private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (Strin
                         "Next launch: ", style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
                     )
                     Text(showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
-                    Text(nextLaunch.name)
+                    if (nextLaunch.name != null)
+                        Text(nextLaunch.name)
                 }
                 Icon(
                     Icons.Filled.ArrowForward, contentDescription = null, tint = Color.Black
@@ -122,11 +124,12 @@ private fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (Strin
                             fontSize = 15.sp, color = Color.White
                         )
                     )
-                    Text(
-                        nextLaunch.name, style = MaterialTheme.typography.h1.copy(
-                            fontSize = 15.sp, color = Color.White
+                    if (nextLaunch.name != null)
+                        Text(
+                            nextLaunch.name, style = MaterialTheme.typography.h1.copy(
+                                fontSize = 15.sp, color = Color.White
+                            )
                         )
-                    )
                 }
                 Icon(
                     Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White
@@ -143,8 +146,12 @@ private fun LatestLaunchSection(
     launch: Launch,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    Box(modifier = Modifier.clickable(onClick = { navigateToLaunchDetails(launch.id) })) {
-        if (launch.links.flickr.original.isNotEmpty())
+    Box(modifier = Modifier.clickable(onClick = {
+        if (launch.id != null) navigateToLaunchDetails(
+            launch.id
+        )
+    })) {
+        if (launch.links != null && launch.links.flickr.original.isNotEmpty())
             Image(
                 painter = rememberImagePainter(data = launch.links.flickr.original.first(),
                     builder = {
@@ -178,12 +185,13 @@ private fun LatestLaunchSection(
                     color = Color.White,
                 ),
             )
-            Text(
-                launch.name,
-                style = MaterialTheme.typography.body1.copy(
-                    color = Color.White, fontSize = 22.sp
-                ),
-            )
+            if (launch.name != null)
+                Text(
+                    launch.name,
+                    style = MaterialTheme.typography.body1.copy(
+                        color = Color.White, fontSize = 22.sp
+                    ),
+                )
 
         }
     }
@@ -281,9 +289,9 @@ private fun PastLaunchesCarouselSection(
         )
         LazyRow {
             items(launches.reversed().subList(1, launches.size)
-                .filter { it.links.flickr.original.isNotEmpty() }) { launch ->
+                .filter { it.links != null && it.links.flickr.original.isNotEmpty() }) { launch ->
                 Card(
-                    onClick = { navigateToLaunchDetails(launch.id) },
+                    onClick = { if (launch.id != null) navigateToLaunchDetails(launch.id) },
                     shape = RoundedCornerShape(15.dp),
                     elevation = 15.dp,
                     modifier = Modifier
@@ -291,14 +299,15 @@ private fun PastLaunchesCarouselSection(
                         .padding(end = 20.dp)
                 ) {
                     Box {
-                        Image(
-                            painter = rememberImagePainter(data = launch.links.flickr.original.first(),
-                                builder = {
-                                    crossfade(true)
-                                }),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillHeight,
-                        )
+                        if (launch.links != null)
+                            Image(
+                                painter = rememberImagePainter(data = launch.links.flickr.original.first(),
+                                    builder = {
+                                        crossfade(true)
+                                    }),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillHeight,
+                            )
                         Box(
                             modifier = Modifier
                                 .size(300.dp, 200.dp)
@@ -310,15 +319,16 @@ private fun PastLaunchesCarouselSection(
                                     )
                                 ),
                         )
-                        Text(
-                            launch.name,
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(10.dp),
-                            style = MaterialTheme.typography.body1.copy(
-                                fontSize = 17.sp, color = Color.White
-                            ),
-                        )
+                        if (launch.name != null)
+                            Text(
+                                launch.name,
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                                    .padding(10.dp),
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 17.sp, color = Color.White
+                                ),
+                            )
                     }
                 }
             }

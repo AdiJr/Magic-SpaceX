@@ -1,4 +1,4 @@
-package com.adi.magicspacex.ui
+package com.adi.magicspacex.ui.screens
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -11,8 +11,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,44 +20,37 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.models.launchpad.Launchpad
-import com.adi.magicspacex.models.rocket.Rocket
-import com.adi.magicspacex.models.ship.Ship
+import com.adi.magicspacex.ui.viewmodels.LaunchDetailsUiState
 import com.adi.magicspacex.utils.formatStringToLocalDateString
 import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.ui.LoadingSection
-import com.adi.magicspacex.viewmodels.LaunchDetailsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
-fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel(), launchId: String) {
-    detailsViewModel.fetchLaunchById(launchId)
-    val launch: Launch? by detailsViewModel.launch.observeAsState()
+fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
     val context = LocalContext.current
+    val launch = launchDetailsUiState.launch
 
     Column(
         Modifier.verticalScroll(rememberScrollState())
     ) {
-        LoadingSection(launch) {
-            detailsViewModel.fetchRocketById(launch!!.rocket)
-            detailsViewModel.fetchLaunchpadById(launch!!.launchpad)
-            detailsViewModel.fetchShipById(launch!!.ships.first())
+        LoadingSection(launchDetailsUiState.isLoading) {
+            val rocket = launchDetailsUiState.rocket
+            val launchpad = launchDetailsUiState.launchpad
+            val ship = launchDetailsUiState.ship
 
-            val rocket: Rocket? by detailsViewModel.rocket.observeAsState()
-            val launchpad: Launchpad? by detailsViewModel.launchpad.observeAsState()
-            val ship: Ship? by detailsViewModel.ship.observeAsState()
-
-            if (launch!!.links.flickr.original.isNotEmpty())
+            if (launch?.links != null && launch.links.flickr.original.isNotEmpty())
                 PagerSection(
-                    launch!!,
+                    launch,
                     Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(16.dp),
@@ -71,77 +62,93 @@ fun LaunchScreen(detailsViewModel: LaunchDetailsViewModel = viewModel(), launchI
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(launch!!.name, style = MaterialTheme.typography.h1.copy(fontSize = 20.sp))
+                    if (launch?.name != null)
+                        Text(
+                            launch.name,
+                            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
+                        )
+                    if (launch?.date_utc != null)
+                        Text(
+                            formatStringToLocalDateString(launch.date_utc),
+                            style = MaterialTheme.typography.body1.copy(fontSize = 16.sp)
+                        )
+                    if (launch?.links != null)
+                        Image(
+                            painter = rememberImagePainter(
+                                data = launch.links.patch.small,
+                                builder = {
+                                    crossfade(true)
+                                }
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier.size(250.dp)
+                        )
+                }
+                Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 20.dp))
+                if (launch?.details != null)
                     Text(
-                        formatStringToLocalDateString(launch!!.date_utc),
-                        style = MaterialTheme.typography.body1.copy(fontSize = 16.sp)
+                        launch.details,
+                        style = MaterialTheme.typography.body1.copy(
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Justify
+                        )
                     )
-                    Image(
-                        painter = rememberImagePainter(
-                            data = launch!!.links.patch.small,
-                            builder = {
-                                crossfade(true)
-                            }
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.size(250.dp)
-                    )
+                LoadingSection(launchDetailsUiState.isLoading) {
+                    if (rocket != null && rocket.flickr_images.isNotEmpty())
+                        CardSection("Rocket", rocket.name, rocket.flickr_images.first())
+                    if (launchpad != null && launchpad.images.large.isNotEmpty())
+                        CardSection("Launchpad", launchpad.name, launchpad.images.large.first())
+                    if (ship != null)
+                        CardSection("Ship", ship.name, ship.image)
+
                 }
+
                 Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 20.dp))
-                Text(
-                    launch!!.details,
-                    style = MaterialTheme.typography.body1.copy(
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Justify
-                    )
-                )
-                LoadingSection(rocket) {
-                    CardSection("Rocket", rocket!!.name, rocket!!.flickr_images.first())
-                }
-                LoadingSection(launchpad) {
-                    CardSection("Launchpad", launchpad!!.name, launchpad!!.images.large.first())
-                }
-                LoadingSection(ship) {
-                    CardSection("Ship", ship!!.name, ship!!.image)
-                }
-                Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 20.dp))
-                if (launch!!.links.webcast != null)
-                    WebcastButton(context, launch!!.links.webcast)
+                if (launch?.links != null)
+                    WebcastButton(context, launch.links.webcast)
             }
         }
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalPagerApi
 @Composable
 private fun PagerSection(launch: Launch, modifier: Modifier) {
-    val imageUrls = launch.links.flickr.original
-    val pagerState = rememberPagerState(
-        pageCount = imageUrls.size,
-    )
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.height(400.dp)
-    ) {
-        Image(
-            painter = rememberImagePainter(
-                data = imageUrls[it],
-                builder = {
-                    crossfade(true)
-                }
-            ),
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
+    val imageUrls: List<String>? = launch.links?.flickr?.original
+    val pagerState = imageUrls?.let {
+        rememberPagerState(
+            pageCount = it.size,
         )
     }
-    HorizontalPagerIndicator(
-        pagerState = pagerState,
-        activeColor = Color.Blue,
-        inactiveColor = Color.Black,
-        modifier = modifier,
-    )
+    if (pagerState != null) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.height(400.dp)
+        ) {
+            Image(
+                painter = rememberImagePainter(
+                    data = imageUrls[it],
+                    builder = {
+                        crossfade(true)
+                    }
+                ),
+                contentDescription = null,
+                contentScale = ContentScale.FillHeight,
+            )
+        }
+    }
+    if (pagerState != null) {
+        HorizontalPagerIndicator(
+            pagerState = pagerState,
+            activeColor = Color.Blue,
+            inactiveColor = Color.Black,
+            modifier = modifier,
+        )
+    }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun CardSection(sectionName: String, name: String, imageUrl: String) {
