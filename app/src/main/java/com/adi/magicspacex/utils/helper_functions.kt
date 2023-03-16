@@ -24,16 +24,11 @@ fun formatStringToLocalDate(utcDate: String): Date {
 }
 
 fun formatStringToLocalDateString(utcDate: String): String {
-    val inputFormat =
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-    inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+    val date: Date = formatStringToLocalDate(utcDate)
 
     val outputFormat = SimpleDateFormat("EEEE, dd.MM.yyyy HH:mm", Locale.getDefault())
     outputFormat.timeZone = TimeZone.getDefault()
-
-    val date: Date? = inputFormat.parse(utcDate)
-
-    return outputFormat.format(date!!)
+    return outputFormat.format(date)
 }
 
 fun showTimeToNextLaunch(launchDate: Date): String {
