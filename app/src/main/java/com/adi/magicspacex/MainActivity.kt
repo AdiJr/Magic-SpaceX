@@ -9,21 +9,22 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.adi.magicspacex.ui.HomeScreen
-import com.adi.magicspacex.ui.LaunchScreen
-import com.adi.magicspacex.ui.SplashScreen
+import androidx.navigation.navArgument
+import com.adi.magicspacex.ui.screens.HomeScreen
+import com.adi.magicspacex.ui.screens.LaunchScreen
+import com.adi.magicspacex.ui.screens.SplashScreen
+import com.adi.magicspacex.ui.viewmodels.LaunchDetailsViewModel
 import com.adi.magicspacex.utils.routing.Routes
 import com.adi.magicspacex.utils.theme.MainAppTheme
-import com.adi.magicspacex.viewmodels.HomeViewModel
-import com.adi.magicspacex.viewmodels.LaunchDetailsViewModel
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         setContent {
             ProvideWindowInsets {
@@ -80,14 +81,14 @@ private fun CreateNavHost() {
         composable(Routes.Splash.route) {
             SplashScreen(
                 onContinue = { navController.navigate(Routes.Home.route) },
-                onRegister = {})
+                onRegister = {},
+            )
         }
         composable(Routes.Home.route) {
-            val homeViewModel = hiltViewModel<HomeViewModel>()
             HomeScreen(
-                homeViewModel,
                 navigateToLaunchDetails =
-                { launchId -> navController.navigate(Routes.LaunchDetails.createRoute(launchId)) })
+                { launchId -> navController.navigate(Routes.LaunchDetails.createRoute(launchId)) },
+            )
         }
         composable(
             "${Routes.LaunchDetails.route}/{launchId}",
@@ -97,7 +98,11 @@ private fun CreateNavHost() {
         ) {
             val launchId = it.arguments!!.getString("launchId")!!
             val launchDetailsViewModel = hiltViewModel<LaunchDetailsViewModel>()
-            LaunchScreen(launchDetailsViewModel, launchId)
+            val launchScreenUiState by launchDetailsViewModel.uiState.collectAsStateWithLifecycle()
+            if (!launchScreenUiState.isLoading && launchScreenUiState.launch == null) {
+                launchDetailsViewModel.fetchLaunchById(launchId)
+            }
+            LaunchScreen(launchScreenUiState)
         }
     }
 }

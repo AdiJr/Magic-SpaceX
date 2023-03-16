@@ -29,6 +29,8 @@ object Libs {
         const val appcompat = "androidx.appcompat:appcompat:${Versions.appcompatVersion}"
 
         object Compose {
+            const val lifecycle =
+                "androidx.lifecycle:lifecycle-runtime-compose:${Versions.lifecycleVersion}"
             const val material =
                 "androidx.compose.material:material:${Versions.composeMaterialVersion}"
             const val toolingPreview =
@@ -61,6 +63,7 @@ object Libs {
 
     object Hilt {
         const val android = "com.google.dagger:hilt-android:${Versions.hiltVersion}"
+        const val androidCompiler = "com.google.dagger:hilt-android-compiler:${Versions.hiltVersion}"
         const val testing = "com.google.dagger:hilt-android-testing:${Versions.hiltVersion}"
         const val navigationCompose =
             "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationComposeVersion}"

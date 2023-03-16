@@ -1,6 +1,8 @@
 plugins {
+    kotlin("kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -81,11 +83,13 @@ dependencies {
     implementation(Libs.AndroidX.Lifecycle.viewModelCompose)
     implementation(Libs.AndroidX.Lifecycle.liveData)
     implementation(Libs.AndroidX.Compose.toolingPreview)
+    implementation(Libs.AndroidX.Compose.lifecycle)
     implementation(Libs.AndroidX.Compose.runtimeLivedata)
 
     implementation(Libs.Hilt.android)
     implementation(Libs.Hilt.testing)
     implementation(Libs.Hilt.navigationCompose)
+    kapt(Libs.Hilt.androidCompiler)
 
     implementation(Libs.Coil.coilCompose)
 
@@ -101,4 +105,9 @@ dependencies {
     androidTestImplementation(Libs.Hilt.testing)
 
     debugImplementation(Libs.AndroidX.Compose.tooling)
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

@@ -1,4 +1,4 @@
-package com.adi.magicspacex.ui
+package com.adi.magicspacex.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
