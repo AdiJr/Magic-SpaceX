@@ -19,10 +19,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.adi.magicspacex.ui.screens.HomeScreen
-import com.adi.magicspacex.ui.screens.LaunchScreen
 import com.adi.magicspacex.ui.screens.SplashScreen
-import com.adi.magicspacex.ui.viewmodels.LaunchDetailsViewModel
+import com.adi.magicspacex.ui.screens.home_screen.HomeScreen
+import com.adi.magicspacex.ui.screens.launch_screen.LaunchScreen
+import com.adi.magicspacex.ui.viewModels.HomeViewModel
+import com.adi.magicspacex.ui.viewModels.LaunchDetailsViewModel
 import com.adi.magicspacex.utils.routing.Routes
 import com.adi.magicspacex.utils.theme.MainAppTheme
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -85,10 +86,15 @@ private fun CreateNavHost() {
             )
         }
         composable(Routes.Home.route) {
-            HomeScreen(
-                navigateToLaunchDetails =
-                { launchId -> navController.navigate(Routes.LaunchDetails.createRoute(launchId)) },
-            )
+            val homeViewModel = hiltViewModel<HomeViewModel>()
+            val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+            HomeScreen(homeUiState = homeUiState) { launchId ->
+                navController.navigate(
+                    Routes.LaunchDetails.createRoute(
+                        launchId
+                    )
+                )
+            }
         }
         composable(
             "${Routes.LaunchDetails.route}/{launchId}",
@@ -96,12 +102,8 @@ private fun CreateNavHost() {
                 type = NavType.StringType
             })
         ) {
-            val launchId = it.arguments!!.getString("launchId")!!
             val launchDetailsViewModel = hiltViewModel<LaunchDetailsViewModel>()
             val launchScreenUiState by launchDetailsViewModel.uiState.collectAsStateWithLifecycle()
-            if (!launchScreenUiState.isLoading && launchScreenUiState.launch == null) {
-                launchDetailsViewModel.fetchLaunchById(launchId)
-            }
             LaunchScreen(launchScreenUiState)
         }
     }

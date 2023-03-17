@@ -1,4 +1,4 @@
-package com.adi.magicspacex.ui.viewmodels
+package com.adi.magicspacex.ui.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

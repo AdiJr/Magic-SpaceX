@@ -1,5 +1,6 @@
-package com.adi.magicspacex.ui.viewmodels
+package com.adi.magicspacex.ui.viewModels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adi.magicspacex.models.launch.Launch
@@ -25,18 +26,24 @@ data class LaunchDetailsUiState(
 )
 
 @HiltViewModel
-class LaunchDetailsViewModel @Inject constructor(private val spacexRepository: SpacexRepository) :
+class LaunchDetailsViewModel @Inject constructor(
+    private val spacexRepository: SpacexRepository,
+    savedStateHandle: SavedStateHandle,
+) :
     ViewModel() {
     private val _uiState = MutableStateFlow(LaunchDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun fetchLaunchById(launchId: String) {
+    init {
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true) }
-                val launch = spacexRepository.fetchLaunchById(launchId)
-                fetchLaunchDetails(launch)
-                _uiState.update { it.copy(launch = launch, isLoading = false) }
+                val launchId = savedStateHandle.get<String>("launchId")
+                if (launchId != null) {
+                    _uiState.update { it.copy(isLoading = true) }
+                    val launch = spacexRepository.fetchLaunchById(launchId)
+                    fetchLaunchDetails(launch)
+                    _uiState.update { it.copy(launch = launch, isLoading = false) }
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(exception = e, isLoading = false) }
                 Timber.e(e, "Error in fetching launch by id")

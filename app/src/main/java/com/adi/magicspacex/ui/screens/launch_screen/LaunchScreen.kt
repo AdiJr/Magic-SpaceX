@@ -1,7 +1,6 @@
-package com.adi.magicspacex.ui.screens
+package com.adi.magicspacex.ui.screens.launch_screen
 
 import android.content.Context
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -17,13 +16,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
+import com.adi.magicspacex.R
 import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.ui.viewmodels.LaunchDetailsUiState
+import com.adi.magicspacex.ui.viewModels.LaunchDetailsUiState
 import com.adi.magicspacex.utils.formatStringToLocalDateString
 import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.ui.LoadingSection
@@ -32,7 +32,6 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 
-@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
@@ -73,13 +72,8 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
                             style = MaterialTheme.typography.body1.copy(fontSize = 16.sp)
                         )
                     if (launch?.links != null)
-                        Image(
-                            painter = rememberImagePainter(
-                                data = launch.links.patch.small,
-                                builder = {
-                                    crossfade(true)
-                                }
-                            ),
+                        AsyncImage(
+                            model = launch.links.patch.small,
                             contentDescription = null,
                             modifier = Modifier.size(250.dp)
                         )
@@ -111,7 +105,6 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @ExperimentalPagerApi
 @Composable
 private fun PagerSection(launch: Launch, modifier: Modifier) {
@@ -126,15 +119,11 @@ private fun PagerSection(launch: Launch, modifier: Modifier) {
             state = pagerState,
             modifier = Modifier.height(400.dp)
         ) {
-            Image(
-                painter = rememberImagePainter(
-                    data = imageUrls[it],
-                    builder = {
-                        crossfade(true)
-                    }
-                ),
+            AsyncImage(
+                model = imageUrls[it],
                 contentDescription = null,
-                contentScale = ContentScale.FillHeight,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.height(400.dp)
             )
         }
     }
@@ -148,7 +137,6 @@ private fun PagerSection(launch: Launch, modifier: Modifier) {
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun CardSection(sectionName: String, name: String, imageUrl: String) {
@@ -163,24 +151,18 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
         onClick = {},
         shape = RoundedCornerShape(15.dp),
         elevation = 15.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .size(300.dp, 200.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Box {
-            Image(
-                painter = rememberImagePainter(
-                    data = imageUrl,
-                    builder = {
-                        crossfade(true)
-                    }
-                ),
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = null,
-                contentScale = ContentScale.FillWidth,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxWidth(),
             )
             Box(
                 modifier = Modifier
-                    .size(350.dp, 200.dp)
+                    .fillMaxWidth()
                     .background(
                         brush = Brush.verticalGradient(
                             listOf(
@@ -193,8 +175,7 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
             )
             Text(
                 name,
-                modifier = Modifier
-                    .align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center),
                 style = MaterialTheme.typography.h1.copy(
                     fontSize = 22.sp,
                     color = Color.White
@@ -224,7 +205,7 @@ private fun WebcastButton(context: Context, url: String) {
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            "Watch webcast", style = MaterialTheme.typography.body1.copy(
+            stringResource(R.string.watch_webcast), style = MaterialTheme.typography.body1.copy(
                 fontSize = 16.sp, color = Color.White
             )
         )

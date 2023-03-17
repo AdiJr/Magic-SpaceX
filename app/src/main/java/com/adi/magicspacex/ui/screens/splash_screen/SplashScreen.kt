@@ -22,8 +22,9 @@ import com.adi.magicspacex.R
 fun SplashScreen(onContinue: () -> Unit, onRegister: () -> Unit) = Box {
     Image(
         painter = painterResource(id = R.drawable.splash_background),
-        contentDescription = "background_image",
-        contentScale = ContentScale.FillHeight
+        contentDescription = stringResource(R.string.splash_image_description),
+        contentScale = ContentScale.FillHeight,
+        modifier = Modifier.fillMaxSize(),
     )
     MainTexts()
     BottomButtons(
@@ -89,6 +90,6 @@ private fun BottomButtons(onRegister: () -> Unit, onContinue: () -> Unit, modifi
 
 @Preview("SplashScreen")
 @Composable
-fun SplashScreenPreview() {
+private fun SplashScreenPreview() {
     SplashScreen(onContinue = {}, onRegister = {})
 }

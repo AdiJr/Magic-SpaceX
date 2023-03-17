@@ -1,16 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Magic SpaceX</string>
-    <string name="register">Register</string>
-    <string name="guest_continue">Continue as guest</string>
-    <string name="splash_quote">There are no passengers on spaceship earth. We are all crew</string>
     <string name="splash_image_description">space</string>
     <string name="rockets">Rockets</string>
     <string name="dragons">Dragon Spaceships</string>
-    <string name="launchpads">Launchpads</string>
     <string name="ships">Ships</string>
     <string name="about">About SpaceX</string>
     <string name="see_more">See more</string>
-    <string name="links">Links</string>
     <string name="watch_webcast">Watch webcast</string>
     <string name="past_missions">Past missions</string>
 </resources>

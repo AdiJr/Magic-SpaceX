@@ -18,7 +18,7 @@ object Versions {
     const val hiltVersion = "2.45"
     const val hiltNavigationComposeVersion = "1.0.0-alpha03"
     const val jUnitVersion = "4.13"
-    const val coilVersion = "1.3.0"
+    const val coilVersion = "2.2.2"
     const val lottieVersion = "4.0.0"
     const val retrofitVersion = "2.9.0"
     const val okhttpLoggingVersion = "4.9.1"
