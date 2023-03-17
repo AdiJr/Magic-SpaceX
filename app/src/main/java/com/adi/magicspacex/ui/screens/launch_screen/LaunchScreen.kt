@@ -88,12 +88,23 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
                         )
                     )
                 LoadingSection(launchDetailsUiState.isLoading) {
-                    if (rocket != null && rocket.flickr_images.isNotEmpty())
-                        CardSection("Rocket", rocket.name, rocket.flickr_images.first())
-                    if (launchpad != null && launchpad.images.large.isNotEmpty())
-                        CardSection("Launchpad", launchpad.name, launchpad.images.large.first())
-                    if (ship != null)
-                        CardSection("Ship", ship.name, ship.image)
+                    if (rocket != null && rocket.flickr_images.isNotEmpty()) {
+                        CardSection(
+                            stringResource(R.string.rocket),
+                            rocket.name,
+                            rocket.flickr_images.first(),
+                        )
+                    }
+                    if (launchpad != null && launchpad.images.large.isNotEmpty()) {
+                        CardSection(
+                            stringResource(R.string.launchpad),
+                            launchpad.name,
+                            launchpad.images.large.first(),
+                        )
+                    }
+                    if (ship != null) {
+                        CardSection(stringResource(R.string.ship), ship.name, ship.image)
+                    }
 
                 }
 

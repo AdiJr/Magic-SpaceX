@@ -13,4 +13,7 @@
     <string name="links">Links</string>
     <string name="watch_webcast">Watch webcast</string>
     <string name="past_missions">Past missions</string>
+    <string name="rocket">Rocket</string>
+    <string name="launchpad">Launchpad</string>
+    <string name="ship">Ship</string>
 </resources>
