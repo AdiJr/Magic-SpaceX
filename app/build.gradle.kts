@@ -66,10 +66,6 @@ dependencies {
     implementation(Libs.Accompanist.pager)
     implementation(Libs.Accompanist.pagerIndicators)
 
-    implementation(Libs.Lottie.lottieCompose)
-
-    implementation(Libs.Material.material)
-
     implementation(Libs.Retrofit.retrofit)
     implementation(Libs.Retrofit.gson)
 
@@ -77,14 +73,12 @@ dependencies {
 
     implementation(Libs.AndroidX.Activity.activityCompose)
     implementation(Libs.AndroidX.appcompat)
-    implementation(Libs.AndroidX.Compose.material)
+    implementation(Libs.AndroidX.Compose.material3)
     implementation(Libs.AndroidX.Compose.ui)
     implementation(Libs.AndroidX.Compose.navigation)
     implementation(Libs.AndroidX.Lifecycle.viewModelCompose)
-    implementation(Libs.AndroidX.Lifecycle.liveData)
     implementation(Libs.AndroidX.Compose.toolingPreview)
     implementation(Libs.AndroidX.Compose.lifecycle)
-    implementation(Libs.AndroidX.Compose.runtimeLivedata)
 
     implementation(Libs.Hilt.android)
     implementation(Libs.Hilt.testing)

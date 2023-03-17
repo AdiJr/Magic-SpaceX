@@ -16,10 +16,6 @@ object Libs {
         }
     }
 
-    object Material {
-        const val material = "com.google.android.material:material:${Versions.materialVersion}"
-    }
-
     object AndroidX {
         object Activity {
             const val activityCompose =
@@ -31,13 +27,12 @@ object Libs {
         object Compose {
             const val lifecycle =
                 "androidx.lifecycle:lifecycle-runtime-compose:${Versions.lifecycleVersion}"
-            const val material =
-                "androidx.compose.material:material:${Versions.composeMaterialVersion}"
+            const val material3 =
+                "androidx.compose.material3:material3:${Versions.composeMaterial3Version}"
             const val toolingPreview =
                 "androidx.compose.ui:ui-tooling-preview:${Versions.composeToolingVersion}"
             const val tooling = "androidx.compose.ui:ui-tooling:${Versions.composeToolingVersion}"
             const val ui = "androidx.compose.ui:ui:${Versions.composeUIVersion}"
-            const val runtimeLivedata = "androidx.compose.runtime:runtime-livedata:${Versions.composeRuntimeLivedataVersion}"
             const val navigation =
                 "androidx.navigation:navigation-compose:${Versions.composeNavigationVersion}"
         }
@@ -45,8 +40,6 @@ object Libs {
         object Lifecycle {
             const val viewModelCompose =
                 "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.composeViewmodelVersion}"
-            const val liveData =
-                "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.liveDataVersion}"
         }
 
         object Test {
@@ -63,7 +56,8 @@ object Libs {
 
     object Hilt {
         const val android = "com.google.dagger:hilt-android:${Versions.hiltVersion}"
-        const val androidCompiler = "com.google.dagger:hilt-android-compiler:${Versions.hiltVersion}"
+        const val androidCompiler =
+            "com.google.dagger:hilt-android-compiler:${Versions.hiltVersion}"
         const val testing = "com.google.dagger:hilt-android-testing:${Versions.hiltVersion}"
         const val navigationCompose =
             "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationComposeVersion}"
@@ -75,10 +69,6 @@ object Libs {
 
     object Coil {
         const val coilCompose = "io.coil-kt:coil-compose:${Versions.coilVersion}"
-    }
-
-    object Lottie {
-        const val lottieCompose = "com.airbnb.android:lottie-compose:${Versions.lottieVersion}"
     }
 
     object Retrofit {

@@ -1,9 +1,9 @@
-package com.adi.magicspacex.ui.screens
+package com.adi.magicspacex.ui.screens.splash_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.adi.magicspacex.R
 
 @Composable
@@ -45,11 +44,11 @@ private fun MainTexts() {
     ) {
         Text(
             stringResource(id = R.string.app_name),
-            style = MaterialTheme.typography.h1.copy(fontSize = 30.sp, color = Color.White),
+            style = MaterialTheme.typography.headlineMedium.copy(color = Color.White),
         )
         Text(
             stringResource(id = R.string.splash_quote),
-            style = MaterialTheme.typography.body1.copy(
+            style = MaterialTheme.typography.bodyMedium.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 fontStyle = FontStyle.Italic,
@@ -69,18 +68,18 @@ private fun BottomButtons(onRegister: () -> Unit, onContinue: () -> Unit, modifi
         Button(
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.textButtonColors(
-                backgroundColor = Color.White,
+                containerColor = Color.White,
                 contentColor = Color.Black
             ),
             onClick = onRegister,
         ) {
-            Text(stringResource(R.string.register), style = MaterialTheme.typography.body1)
+            Text(stringResource(R.string.register), style = MaterialTheme.typography.labelMedium)
         }
         Spacer(modifier = Modifier.height(10.dp))
         TextButton(onClick = onContinue) {
             Text(
                 stringResource(R.string.guest_continue),
-                style = MaterialTheme.typography.body1.copy(
+                style = MaterialTheme.typography.labelMedium.copy(
                     color = Color.White,
                 ),
             )

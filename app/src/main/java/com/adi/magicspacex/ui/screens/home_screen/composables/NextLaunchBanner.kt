@@ -2,21 +2,20 @@ package com.adi.magicspacex.ui.screens.home_screen.composables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.utils.formatStringToLocalDate
 import com.adi.magicspacex.utils.launchUrl
@@ -64,7 +63,7 @@ private fun NextLaunchWithNotification(nextLaunch: Launch) {
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            "Next launch: ", style = MaterialTheme.typography.h1.copy(fontSize = 15.sp)
+            "Next launch: ", style = MaterialTheme.typography.titleMedium,
         )
         if (nextLaunch.date_utc != null)
             Text(showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
@@ -80,13 +79,13 @@ private fun NextLaunchWithNotification(nextLaunch: Launch) {
 private fun NextLaunchWithWebcast(nextLaunch: Launch) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            "LIVE: ", style = MaterialTheme.typography.h1.copy(
-                fontSize = 15.sp, color = Color.White
+            "LIVE: ", style = MaterialTheme.typography.titleMedium.copy(
+                color = Color.White
             )
         )
         Text(
-            nextLaunch.name!!, style = MaterialTheme.typography.h1.copy(
-                fontSize = 15.sp, color = Color.White
+            nextLaunch.name!!, style = MaterialTheme.typography.titleMedium.copy(
+                color = Color.White
             )
         )
     }

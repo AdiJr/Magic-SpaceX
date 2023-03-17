@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.adi.magicspacex.ui.screens.home_screen.composables
 
 import androidx.compose.foundation.background
@@ -5,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.dragon.Dragon
@@ -24,13 +25,12 @@ import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 
-@ExperimentalMaterialApi
 @Composable
 fun RocketsCarouselSection(rockets: List<Rocket>) {
     Column {
         Text(
             stringResource(R.string.rockets),
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 10.dp)
         )
         LazyRow {
@@ -45,7 +45,6 @@ fun RocketsCarouselSection(rockets: List<Rocket>) {
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun PastLaunchesCarouselSection(
     launches: List<Launch>, navigateToLaunchDetails: (String) -> Unit
@@ -53,7 +52,7 @@ fun PastLaunchesCarouselSection(
     Column(Modifier.padding(vertical = 20.dp)) {
         Text(
             stringResource(R.string.past_missions),
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 10.dp)
         )
         LazyRow {
@@ -70,13 +69,12 @@ fun PastLaunchesCarouselSection(
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun DragonColumn(dragons: List<Dragon>) {
     Text(
         stringResource(R.string.dragons),
         modifier = Modifier.padding(vertical = 20.dp),
-        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
+        style = MaterialTheme.typography.titleLarge,
     )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -113,8 +111,8 @@ fun DragonColumn(dragons: List<Dragon>) {
                     Text(
                         dragon.name,
                         modifier = Modifier.align(Alignment.Center),
-                        style = MaterialTheme.typography.h1.copy(
-                            fontSize = 22.sp, color = Color.White
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = Color.White
                         ),
                     )
                 }
@@ -123,13 +121,12 @@ fun DragonColumn(dragons: List<Dragon>) {
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
     Column {
         Text(
             stringResource(R.string.launchpads),
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 10.dp)
         )
         LazyRow {
@@ -144,13 +141,12 @@ fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun ShipsCarouselSection(ships: List<Ship>) {
     Column {
         Text(
             stringResource(R.string.ships),
-            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(vertical = 20.dp),
         )
         LazyRow {
@@ -161,7 +157,6 @@ fun ShipsCarouselSection(ships: List<Ship>) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CarouselItem(
     imageUrl: String,
@@ -200,8 +195,8 @@ private fun CarouselItem(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(10.dp),
-                style = MaterialTheme.typography.body1.copy(
-                    fontSize = 17.sp, color = Color.White,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White,
                 ),
             )
         }

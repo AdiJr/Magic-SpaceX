@@ -1,8 +1,13 @@
 package com.adi.magicspacex.ui.screens.home_screen
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.company_info.CompanyInfo
@@ -28,17 +32,14 @@ import com.adi.magicspacex.ui.viewModels.HomeUiState
 import com.adi.magicspacex.utils.constants.Strings
 import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.ui.LoadingSection
-import java.util.*
 
-//TODO: Add center top bar, add support for material 3, add theming, add dynamic theming, dark mode support
+//TODO: Add center top bar
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     homeUiState: HomeUiState,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-
     val latestLaunch = homeUiState.latestLaunch
     val nextLaunch = homeUiState.nextLaunch
 
@@ -108,23 +109,17 @@ private fun LatestLaunchSection(
             ) {
                 Text(
                     "Latest launch",
-                    style = MaterialTheme.typography.h1.copy(
-                        color = if (launch.links != null && launch.links.flickr.original.isNotEmpty()) Color.White else Color.Black,
-                    ),
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
                     launch.name,
-                    style = MaterialTheme.typography.body1.copy(
-                        color = if (launch.links != null && launch.links.flickr.original.isNotEmpty()) Color.White else Color.Black,
-                        fontSize = 22.sp
-                    ),
+                    style = MaterialTheme.typography.titleLarge,
                 )
 
             }
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 private fun ContentSection(
     rockets: List<Rocket>,
@@ -150,26 +145,26 @@ private fun ContentSection(
 fun AboutSection(companyInfo: CompanyInfo) {
     Text(
         stringResource(R.string.about),
-        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+        style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(vertical = 20.dp)
     )
     Text(
         companyInfo.summary,
-        style = MaterialTheme.typography.body1.copy(
-            fontSize = 15.sp, textAlign = TextAlign.Justify
+        style = MaterialTheme.typography.titleMedium.copy(
+            textAlign = TextAlign.Justify
         ),
     )
     OutlinedButton(onClick = { }) {
         Text(
             stringResource(R.string.see_more),
-            style = MaterialTheme.typography.h1.copy(
-                fontSize = 15.sp, textDecoration = TextDecoration.Underline
+            style = MaterialTheme.typography.titleMedium.copy(
+                textDecoration = TextDecoration.Underline
             ),
         )
     }
     Text(
         stringResource(R.string.links),
-        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+        style = MaterialTheme.typography.titleLarge,
         modifier = Modifier
             .padding(vertical = 20.dp)
             .fillMaxWidth()
@@ -203,7 +198,7 @@ private fun SocialImageLink(imageUrl: String, url: String) {
         contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
-            .size(60.dp)
+            .size(40.dp)
             .clickable {
                 launchUrl(context, url)
             },

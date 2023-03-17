@@ -5,9 +5,8 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,22 +18,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.adi.magicspacex.ui.screens.SplashScreen
 import com.adi.magicspacex.ui.screens.home_screen.HomeScreen
 import com.adi.magicspacex.ui.screens.launch_screen.LaunchScreen
+import com.adi.magicspacex.ui.screens.splash_screen.SplashScreen
 import com.adi.magicspacex.ui.viewModels.HomeViewModel
 import com.adi.magicspacex.ui.viewModels.LaunchDetailsViewModel
 import com.adi.magicspacex.utils.routing.Routes
-import com.adi.magicspacex.utils.theme.MainAppTheme
+import com.adi.magicspacex.utils.theme.AppTheme
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @ExperimentalPagerApi
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,13 +50,11 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@ExperimentalPagerApi
-@ExperimentalMaterialApi
 @Composable
 private fun MyApp() {
-    MainAppTheme {
+    AppTheme {
         Surface(
-            color = MaterialTheme.colors.background,
+            color = MaterialTheme.colorScheme.surface,
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
@@ -70,8 +64,6 @@ private fun MyApp() {
     }
 }
 
-@ExperimentalPagerApi
-@ExperimentalMaterialApi
 @Composable
 private fun CreateNavHost() {
     val navController = rememberNavController()

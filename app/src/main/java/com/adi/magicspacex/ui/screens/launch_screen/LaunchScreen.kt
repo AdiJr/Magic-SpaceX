@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalPagerApi::class)
+
 package com.adi.magicspacex.ui.screens.launch_screen
 
 import android.content.Context
@@ -6,9 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.launch.Launch
@@ -32,21 +33,18 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 
-@ExperimentalMaterialApi
-@ExperimentalPagerApi
 @Composable
 fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
     val context = LocalContext.current
     val launch = launchDetailsUiState.launch
+    val rocket = launchDetailsUiState.rocket
+    val launchpad = launchDetailsUiState.launchpad
+    val ship = launchDetailsUiState.ship
 
-    Column(
-        Modifier.verticalScroll(rememberScrollState())
-    ) {
-        LoadingSection(launchDetailsUiState.isLoading) {
-            val rocket = launchDetailsUiState.rocket
-            val launchpad = launchDetailsUiState.launchpad
-            val ship = launchDetailsUiState.ship
-
+    LoadingSection(launchDetailsUiState.isLoading) {
+        Column(
+            Modifier.verticalScroll(rememberScrollState())
+        ) {
             if (launch?.links != null && launch.links.flickr.original.isNotEmpty())
                 PagerSection(
                     launch,
@@ -64,12 +62,12 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
                     if (launch?.name != null)
                         Text(
                             launch.name,
-                            style = MaterialTheme.typography.h1.copy(fontSize = 20.sp)
+                            style = MaterialTheme.typography.titleLarge,
                         )
                     if (launch?.date_utc != null)
                         Text(
                             formatStringToLocalDateString(launch.date_utc),
-                            style = MaterialTheme.typography.body1.copy(fontSize = 16.sp)
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     if (launch?.links != null)
                         AsyncImage(
@@ -82,8 +80,7 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
                 if (launch?.details != null)
                     Text(
                         launch.details,
-                        style = MaterialTheme.typography.body1.copy(
-                            fontSize = 16.sp,
+                        style = MaterialTheme.typography.titleMedium.copy(
                             textAlign = TextAlign.Justify
                         )
                     )
@@ -116,7 +113,6 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
     }
 }
 
-@ExperimentalPagerApi
 @Composable
 private fun PagerSection(launch: Launch, modifier: Modifier) {
     val imageUrls: List<String>? = launch.links?.flickr?.original
@@ -148,21 +144,18 @@ private fun PagerSection(launch: Launch, modifier: Modifier) {
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 private fun CardSection(sectionName: String, name: String, imageUrl: String) {
     Text(
         sectionName,
-        style = MaterialTheme.typography.h1.copy(fontSize = 20.sp),
+        style = MaterialTheme.typography.titleLarge,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 10.dp)
     )
     Card(
-        onClick = {},
         shape = RoundedCornerShape(15.dp),
-        elevation = 15.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Box {
             AsyncImage(
@@ -187,8 +180,7 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
             Text(
                 name,
                 modifier = Modifier.align(Alignment.Center),
-                style = MaterialTheme.typography.h1.copy(
-                    fontSize = 22.sp,
+                style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White
                 ),
             )
@@ -202,7 +194,7 @@ private fun WebcastButton(context: Context, url: String) {
         onClick = { launchUrl(context, url) },
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.textButtonColors(
-            backgroundColor = Color.Red,
+            containerColor = Color.Red,
         ),
         modifier = Modifier
             .padding(bottom = 20.dp)
@@ -216,8 +208,9 @@ private fun WebcastButton(context: Context, url: String) {
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            stringResource(R.string.watch_webcast), style = MaterialTheme.typography.body1.copy(
-                fontSize = 16.sp, color = Color.White
+            stringResource(R.string.watch_webcast),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = Color.White
             )
         )
     }
