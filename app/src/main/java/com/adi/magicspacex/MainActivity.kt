@@ -1,15 +1,19 @@
 package com.adi.magicspacex
 
+import android.app.Activity
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,13 +38,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
-
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-
         setContent {
             ProvideWindowInsets {
                 MyApp()
@@ -54,11 +51,21 @@ class MainActivity : ComponentActivity() {
 private fun MyApp() {
     AppTheme {
         Surface(
-            color = MaterialTheme.colorScheme.surface,
+            color = colorScheme.surface,
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
+            val view = LocalView.current
+            val isDarkTheme: Boolean = isSystemInDarkTheme()
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.surface.toArgb()
+            if (!view.isInEditMode) {
+                SideEffect {
+                    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+                        !isDarkTheme
+                }
+            }
             CreateNavHost()
         }
     }

@@ -5,9 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
@@ -33,8 +31,7 @@ import com.adi.magicspacex.utils.constants.Strings
 import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.ui.LoadingSection
 
-//TODO: Add center top bar
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeUiState: HomeUiState,
@@ -43,13 +40,50 @@ fun HomeScreen(
     val latestLaunch = homeUiState.latestLaunch
     val nextLaunch = homeUiState.nextLaunch
 
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        stringResource(id = R.string.app_name),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                modifier = Modifier.height(45.dp)
+            )
+        },
+    ) {
+        Surface(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            HomeScreenBody(
+                homeUiState = homeUiState,
+                navigateToLaunchDetails = navigateToLaunchDetails,
+                nextLaunch = nextLaunch,
+                latestLaunch = latestLaunch,
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeScreenBody(
+    homeUiState: HomeUiState,
+    navigateToLaunchDetails: (String) -> Unit,
+    nextLaunch: Launch?,
+    latestLaunch: Launch?,
+) {
     LoadingSection(isLoading = homeUiState.isLoading) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(top = 25.dp)
         ) {
-            if (nextLaunch != null) NextLaunchBanner(nextLaunch, navigateToLaunchDetails)
+            if (nextLaunch != null) {
+                NextLaunchBanner(nextLaunch, navigateToLaunchDetails)
+            }
             if (latestLaunch != null) {
                 LatestLaunchSection(latestLaunch, navigateToLaunchDetails)
             }
@@ -73,42 +107,46 @@ private fun LatestLaunchSection(
     launch: Launch,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    Box(modifier = Modifier.clickable(onClick = {
-        if (launch.id != null) navigateToLaunchDetails(
-            launch.id
-        )
-    })) {
-        if (launch.links != null && launch.links.flickr.original.isNotEmpty())
+    Box(modifier = Modifier.clickable {
+        if (launch.id != null) {
+            navigateToLaunchDetails(
+                launch.id
+            )
+        }
+    }) {
+        if ((launch.links != null) && launch.links.patch.large.isNotEmpty()) {
             AsyncImage(
-                model = launch.links.flickr.original.first(),
+                model = launch.links.patch.large,
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.height(400.dp)
             )
+        }
 
-        if (launch.links != null && launch.links.flickr.original.isNotEmpty())
+        if (launch.links != null && launch.links.patch.large.isNotEmpty()) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .align(Alignment.BottomCenter)
+                    .fillMaxSize()
+                    .height(400.dp)
+                    .align(Alignment.Center)
                     .background(
                         brush = Brush.verticalGradient(
                             listOf(
-                                Color.Transparent, Color.Black.copy(alpha = 0.7f)
+                                Color.Transparent, Color.Black.copy(alpha = 0.9f)
                             ), 0.0f, Float.POSITIVE_INFINITY
                         )
                     )
             )
-        if (launch.name != null)
+        }
+        if (launch.name != null) {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .align(Alignment.BottomStart)
-                    .padding(start = 30.dp, bottom = 30.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 20.dp)
             ) {
                 Text(
-                    "Latest launch",
+                    stringResource(R.string.latest_launch),
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
@@ -117,6 +155,7 @@ private fun LatestLaunchSection(
                 )
 
             }
+        }
     }
 }
 
@@ -143,6 +182,7 @@ private fun ContentSection(
 
 @Composable
 fun AboutSection(companyInfo: CompanyInfo) {
+    val context = LocalContext.current
     Text(
         stringResource(R.string.about),
         style = MaterialTheme.typography.titleLarge,
@@ -154,12 +194,13 @@ fun AboutSection(companyInfo: CompanyInfo) {
             textAlign = TextAlign.Justify
         ),
     )
-    OutlinedButton(onClick = { }) {
+    OutlinedButton(
+        { launchUrl(context, companyInfo.links.website) },
+        modifier = Modifier.padding(top = 20.dp)
+    ) {
         Text(
             stringResource(R.string.see_more),
-            style = MaterialTheme.typography.titleMedium.copy(
-                textDecoration = TextDecoration.Underline
-            ),
+            style = MaterialTheme.typography.titleMedium,
         )
     }
     Text(

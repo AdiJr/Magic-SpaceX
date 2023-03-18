@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adi.magicspacex.models.launch.Launch
@@ -28,10 +27,12 @@ fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Un
     val isLaunchDateAfterCurrent =
         nextLaunch.date_utc?.let { formatStringToLocalDate(it).after(Calendar.getInstance().time) }
 
-    Surface(color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) Color.LightGray else Color.Red,
+    Surface(
+        color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .height(60.dp)
+            .padding(bottom = 20.dp)
             .clickable {
                 if (isLaunchDateAfterCurrent != null && !isLaunchDateAfterCurrent && nextLaunch.links != null) launchUrl(
                     context, nextLaunch.links.webcast
@@ -47,7 +48,7 @@ fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Un
             if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
                 NextLaunchWithNotification(nextLaunch = nextLaunch)
             } else if (nextLaunch.name != null) {
-                NextLaunchWithWebcast(nextLaunch = nextLaunch)
+                NextLaunchWithWebcast(nextLaunch.name)
             }
         }
     }
@@ -59,37 +60,33 @@ private fun NextLaunchWithNotification(nextLaunch: Launch) {
         Icon(
             Icons.Filled.Notifications,
             contentDescription = null,
-            tint = Color.Black,
+            tint = MaterialTheme.colorScheme.onPrimary,
         )
         Spacer(modifier = Modifier.width(10.dp))
-        Text(
-            "Next launch: ", style = MaterialTheme.typography.titleMedium,
-        )
         if (nextLaunch.date_utc != null)
             Text(showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
         if (nextLaunch.name != null)
             Text(nextLaunch.name)
     }
     Icon(
-        Icons.Filled.ArrowForward, contentDescription = null, tint = Color.Black
+        Icons.Filled.ArrowForward,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onPrimary,
     )
 }
 
 @Composable
-private fun NextLaunchWithWebcast(nextLaunch: Launch) {
+private fun NextLaunchWithWebcast(launchName: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            "LIVE: ", style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.White
-            )
-        )
-        Text(
-            nextLaunch.name!!, style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.White
+            launchName, style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         )
     }
     Icon(
-        Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White
+        Icons.Rounded.PlayArrow,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onPrimary,
     )
 }

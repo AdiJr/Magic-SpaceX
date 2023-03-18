@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
@@ -33,50 +34,78 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
-    val context = LocalContext.current
+    val launch = launchDetailsUiState.launch
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        if (launch?.name != null) launch.name else stringResource(R.string.launch),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                modifier = Modifier.height(45.dp)
+            )
+        },
+    ) {
+        Surface(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            LaunchScreenBody(launchDetailsUiState = launchDetailsUiState)
+        }
+    }
+}
+
+@Composable
+private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
     val launch = launchDetailsUiState.launch
     val rocket = launchDetailsUiState.rocket
     val launchpad = launchDetailsUiState.launchpad
     val ship = launchDetailsUiState.ship
+    val context = LocalContext.current
 
     LoadingSection(launchDetailsUiState.isLoading) {
         Column(
             Modifier.verticalScroll(rememberScrollState())
         ) {
-            if (launch?.links != null && launch.links.flickr.original.isNotEmpty())
-                PagerSection(
-                    launch,
-                    Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp),
-                )
-            Spacer(Modifier.height(30.dp))
             Column(Modifier.padding(horizontal = 20.dp)) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (launch?.name != null)
-                        Text(
-                            launch.name,
-                            style = MaterialTheme.typography.titleLarge,
+                    if (launch?.links != null)
+                        AsyncImage(
+                            model = launch.links.patch.large,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(350.dp)
                         )
                     if (launch?.date_utc != null)
                         Text(
                             formatStringToLocalDateString(launch.date_utc),
                             style = MaterialTheme.typography.titleMedium,
-                        )
-                    if (launch?.links != null)
-                        AsyncImage(
-                            model = launch.links.patch.small,
-                            contentDescription = null,
-                            modifier = Modifier.size(250.dp)
+                            modifier = Modifier.padding(vertical = 10.dp)
                         )
                 }
-                Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 20.dp))
+                if (launch?.links != null && launch.links.flickr.original.isNotEmpty())
+                    PagerSection(
+                        launch,
+                        Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp),
+                    )
+                Divider(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(vertical = 20.dp)
+                )
                 if (launch?.details != null)
                     Text(
                         launch.details,
@@ -84,30 +113,31 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
                             textAlign = TextAlign.Justify
                         )
                     )
-                LoadingSection(launchDetailsUiState.isLoading) {
-                    if (rocket != null && rocket.flickr_images.isNotEmpty()) {
-                        CardSection(
-                            stringResource(R.string.rocket),
-                            rocket.name,
-                            rocket.flickr_images.first(),
-                        )
-                    }
-                    if (launchpad != null && launchpad.images.large.isNotEmpty()) {
-                        CardSection(
-                            stringResource(R.string.launchpad),
-                            launchpad.name,
-                            launchpad.images.large.first(),
-                        )
-                    }
-                    if (ship != null) {
-                        CardSection(stringResource(R.string.ship), ship.name, ship.image)
-                    }
-
+                if (rocket != null && rocket.flickr_images.isNotEmpty()) {
+                    CardSection(
+                        stringResource(R.string.rocket),
+                        rocket.name,
+                        rocket.flickr_images.first(),
+                    )
+                }
+                if (launchpad != null && launchpad.images.large.isNotEmpty()) {
+                    CardSection(
+                        stringResource(R.string.launchpad),
+                        launchpad.name,
+                        launchpad.images.large.first(),
+                    )
+                }
+                if (ship != null) {
+                    CardSection(stringResource(R.string.ship), ship.name, ship.image)
                 }
 
-                Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 20.dp))
-                if (launch?.links != null)
+                Divider(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(vertical = 20.dp)
+                )
+                if (launch?.links != null) {
                     WebcastButton(context, launch.links.webcast)
+                }
             }
         }
     }
@@ -124,21 +154,21 @@ private fun PagerSection(launch: Launch, modifier: Modifier) {
     if (pagerState != null) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.height(400.dp)
+            modifier = Modifier.height(500.dp)
         ) {
             AsyncImage(
                 model = imageUrls[it],
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
-                modifier = Modifier.height(400.dp)
+                modifier = Modifier.height(500.dp)
             )
         }
     }
     if (pagerState != null) {
         HorizontalPagerIndicator(
             pagerState = pagerState,
-            activeColor = Color.Blue,
-            inactiveColor = Color.Black,
+            activeColor = MaterialTheme.colorScheme.primary,
+            inactiveColor = MaterialTheme.colorScheme.secondary,
             modifier = modifier,
         )
     }
@@ -167,11 +197,12 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
                     .background(
                         brush = Brush.verticalGradient(
                             listOf(
                                 Color.Transparent,
-                                Color.Black.copy(alpha = 0.6f)
+                                Color.Black.copy(alpha = 0.9f)
                             ),
                             0.0f, Float.POSITIVE_INFINITY
                         )
@@ -181,7 +212,7 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
                 name,
                 modifier = Modifier.align(Alignment.Center),
                 style = MaterialTheme.typography.titleLarge.copy(
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground,
                 ),
             )
         }
@@ -194,23 +225,22 @@ private fun WebcastButton(context: Context, url: String) {
         onClick = { launchUrl(context, url) },
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.textButtonColors(
-            containerColor = Color.Red,
+            containerColor = MaterialTheme.colorScheme.primary,
         ),
         modifier = Modifier
             .padding(bottom = 20.dp)
             .fillMaxWidth()
-            .size(300.dp, 50.dp)
     ) {
         Icon(
             Icons.Outlined.PlayArrow,
             contentDescription = null,
-            tint = Color.White
+            tint = MaterialTheme.colorScheme.onPrimary,
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             stringResource(R.string.watch_webcast),
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.White
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         )
     }

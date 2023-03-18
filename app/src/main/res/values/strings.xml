@@ -16,4 +16,6 @@
     <string name="rocket">Rocket</string>
     <string name="launchpad">Launchpad</string>
     <string name="ship">Ship</string>
+    <string name="latest_launch">Latest launch</string>
+    <string name="launch">Launch</string>
 </resources>

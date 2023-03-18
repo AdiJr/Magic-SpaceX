@@ -66,7 +66,7 @@ private fun BottomButtons(onRegister: () -> Unit, onContinue: () -> Unit, modifi
         modifier = modifier
     ) {
         Button(
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.textButtonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
