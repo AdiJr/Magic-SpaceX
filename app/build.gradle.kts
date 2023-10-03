@@ -7,6 +7,7 @@ plugins {
 
 android {
     compileSdk = 33
+    namespace = "com.adi.magicspacex"
 
     defaultConfig {
         applicationId = "com.adi.magicspacex"
@@ -21,9 +22,23 @@ android {
         }
     }
 
+    flavorDimensions += "default"
+
+    productFlavors {
+        create("stage") {
+            applicationIdSuffix = ".stage"
+            versionName = "-stage"
+        }
+
+        create("prod") {
+            // No specific configuration.
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
         }
         release {
             isMinifyEnabled = true
@@ -33,38 +48,41 @@ android {
             )
         }
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.2"
     }
+
     packagingOptions {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
         }
     }
-    namespace = "com.adi.magicspacex"
 }
 
 dependencies {
     implementation(Libs.Kotlin.Coroutines.android)
 
     implementation(Libs.Accompanist.insets)
-    implementation(Libs.Accompanist.pager)
-    implementation(Libs.Accompanist.pagerIndicators)
 
     implementation(Libs.Retrofit.retrofit)
     implementation(Libs.Retrofit.gson)

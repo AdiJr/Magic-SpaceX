@@ -1,7 +1,13 @@
-package com.adi.magicspacex.ui.screens.home_screen.composables
+package com.adi.magicspacex.ui.screens.home.composables
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
@@ -16,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.formatStringToLocalDate
-import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.showTimeToNextLaunch
-import java.util.*
+import java.util.Calendar
 
 @Composable
 fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Unit) {
@@ -28,17 +34,25 @@ fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Un
         nextLaunch.date_utc?.let { formatStringToLocalDate(it).after(Calendar.getInstance().time) }
 
     Surface(
-        color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+        color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
+            MaterialTheme.colorScheme.secondary
+        } else {
+            MaterialTheme.colorScheme.primary
+        },
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .padding(bottom = 20.dp)
             .clickable {
-                if (isLaunchDateAfterCurrent != null && !isLaunchDateAfterCurrent && nextLaunch.links != null) launchUrl(
-                    context, nextLaunch.links.webcast
-                ) else if (nextLaunch.id != null) navigateToLaunchDetails(
-                    nextLaunch.id
-                )
+                if (isLaunchDateAfterCurrent != null && !isLaunchDateAfterCurrent && nextLaunch.links != null) {
+                    context.openInExternalBrowser(
+                        url = nextLaunch.links.webcast
+                    )
+                } else if (nextLaunch.id != null) {
+                    navigateToLaunchDetails(
+                        nextLaunch.id
+                    )
+                }
             }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

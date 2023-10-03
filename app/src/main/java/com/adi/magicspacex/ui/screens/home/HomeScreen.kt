@@ -1,11 +1,25 @@
-package com.adi.magicspacex.ui.screens.home_screen
+package com.adi.magicspacex.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,27 +39,30 @@ import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
-import com.adi.magicspacex.ui.screens.home_screen.composables.*
-import com.adi.magicspacex.ui.viewModels.HomeUiState
-import com.adi.magicspacex.utils.constants.Strings
-import com.adi.magicspacex.utils.launchUrl
+import com.adi.magicspacex.ui.screens.home.composables.DragonColumn
+import com.adi.magicspacex.ui.screens.home.composables.LaunchpadsCarouselSection
+import com.adi.magicspacex.ui.screens.home.composables.NextLaunchBanner
+import com.adi.magicspacex.ui.screens.home.composables.PastLaunchesCarouselSection
+import com.adi.magicspacex.ui.screens.home.composables.RocketsCarouselSection
+import com.adi.magicspacex.ui.screens.home.composables.ShipsCarouselSection
+import com.adi.magicspacex.utils.constants.FLICKR_LOGO_URL
+import com.adi.magicspacex.utils.constants.TWITTER_LOGO_URL
+import com.adi.magicspacex.utils.constants.WEBSITE_LOGO_URL
+import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.ui.LoadingSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    homeUiState: HomeUiState,
+    homeViewState: HomeViewState,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    val latestLaunch = homeUiState.latestLaunch
-    val nextLaunch = homeUiState.nextLaunch
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        stringResource(id = R.string.app_name),
+                        text = stringResource(id = R.string.app_name),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -55,15 +72,14 @@ fun HomeScreen(
         },
     ) {
         Surface(
+            color = MaterialTheme.colorScheme.background,
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
         ) {
             HomeScreenBody(
-                homeUiState = homeUiState,
+                homeViewState = homeViewState,
                 navigateToLaunchDetails = navigateToLaunchDetails,
-                nextLaunch = nextLaunch,
-                latestLaunch = latestLaunch,
             )
         }
     }
@@ -71,29 +87,29 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenBody(
-    homeUiState: HomeUiState,
+    homeViewState: HomeViewState,
     navigateToLaunchDetails: (String) -> Unit,
-    nextLaunch: Launch?,
-    latestLaunch: Launch?,
 ) {
-    LoadingSection(isLoading = homeUiState.isLoading) {
+    LoadingSection(isLoading = homeViewState.isLoading) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
         ) {
-            if (nextLaunch != null) {
-                NextLaunchBanner(nextLaunch, navigateToLaunchDetails)
+            if (homeViewState.nextLaunch != null) {
+                NextLaunchBanner(homeViewState.nextLaunch, navigateToLaunchDetails)
             }
-            if (latestLaunch != null) {
-                LatestLaunchSection(latestLaunch, navigateToLaunchDetails)
+
+            if (homeViewState.latestLaunch != null) {
+                LatestLaunchSection(homeViewState.latestLaunch, navigateToLaunchDetails)
             }
-            homeUiState.companyInfo?.let {
+
+            homeViewState.companyInfo?.let {
                 ContentSection(
-                    homeUiState.rockets,
-                    homeUiState.pastLaunches,
-                    homeUiState.dragons,
-                    homeUiState.launchpads,
-                    homeUiState.ships,
+                    homeViewState.rockets,
+                    homeViewState.pastLaunches,
+                    homeViewState.dragons,
+                    homeViewState.launchpads,
+                    homeViewState.ships,
                     it,
                     navigateToLaunchDetails,
                 )
@@ -109,9 +125,7 @@ private fun LatestLaunchSection(
 ) {
     Box(modifier = Modifier.clickable {
         if (launch.id != null) {
-            navigateToLaunchDetails(
-                launch.id
-            )
+            navigateToLaunchDetails(launch.id)
         }
     }) {
         if ((launch.links != null) && launch.links.patch.large.isNotEmpty()) {
@@ -146,11 +160,11 @@ private fun LatestLaunchSection(
                     .padding(bottom = 20.dp)
             ) {
                 Text(
-                    stringResource(R.string.latest_launch),
+                    text = stringResource(R.string.latest_launch),
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
-                    launch.name,
+                    text = launch.name,
                     style = MaterialTheme.typography.titleLarge,
                 )
 
@@ -184,27 +198,25 @@ private fun ContentSection(
 fun AboutSection(companyInfo: CompanyInfo) {
     val context = LocalContext.current
     Text(
-        stringResource(R.string.about),
+        text = stringResource(R.string.about),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(vertical = 20.dp)
     )
     Text(
-        companyInfo.summary,
-        style = MaterialTheme.typography.titleMedium.copy(
-            textAlign = TextAlign.Justify
-        ),
+        text = companyInfo.summary,
+        style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Justify),
     )
     OutlinedButton(
-        { launchUrl(context, companyInfo.links.website) },
-        modifier = Modifier.padding(top = 20.dp)
+        onClick = { context.openInExternalBrowser(url = companyInfo.links.website) },
+        modifier = Modifier.padding(top = 20.dp),
     ) {
         Text(
-            stringResource(R.string.see_more),
+            text = stringResource(R.string.see_more),
             style = MaterialTheme.typography.titleMedium,
         )
     }
     Text(
-        stringResource(R.string.links),
+        text = stringResource(R.string.links),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier
             .padding(vertical = 20.dp)
@@ -214,18 +226,18 @@ fun AboutSection(companyInfo: CompanyInfo) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxSize()
-            .padding(PaddingValues(bottom = 20.dp)),
+            .padding(bottom = 20.dp),
     ) {
         SocialImageLink(
-            imageUrl = Strings().websiteLogoUrl,
+            imageUrl = WEBSITE_LOGO_URL,
             url = companyInfo.links.website
         )
         SocialImageLink(
-            imageUrl = Strings().flickrLogoUrl,
+            imageUrl = FLICKR_LOGO_URL,
             url = companyInfo.links.flickr
         )
         SocialImageLink(
-            imageUrl = Strings().twitterLogoUrl,
+            imageUrl = TWITTER_LOGO_URL,
             url = companyInfo.links.twitter
         )
     }
@@ -241,7 +253,7 @@ private fun SocialImageLink(imageUrl: String, url: String) {
         modifier = Modifier
             .size(40.dp)
             .clickable {
-                launchUrl(context, url)
+                context.openInExternalBrowser(url)
             },
     )
 }

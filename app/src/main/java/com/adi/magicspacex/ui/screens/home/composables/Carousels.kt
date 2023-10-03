@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.adi.magicspacex.ui.screens.home_screen.composables
+package com.adi.magicspacex.ui.screens.home.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -47,7 +47,7 @@ fun RocketsCarouselSection(rockets: List<Rocket>) {
 
 @Composable
 fun PastLaunchesCarouselSection(
-    launches: List<Launch>, navigateToLaunchDetails: (String) -> Unit
+    launches: List<Launch>, navigateToLaunchDetails: (String) -> Unit,
 ) {
     Column(Modifier.padding(vertical = 20.dp)) {
         Text(

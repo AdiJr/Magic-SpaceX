@@ -1,14 +1,15 @@
-@file:OptIn(ExperimentalPagerApi::class)
+package com.adi.magicspacex.ui.screens.launch
 
-package com.adi.magicspacex.ui.screens.launch_screen
-
-import android.content.Context
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,18 +26,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.ui.viewModels.LaunchDetailsUiState
+import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.formatStringToLocalDateString
-import com.adi.magicspacex.utils.launchUrl
 import com.adi.magicspacex.utils.ui.LoadingSection
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
+import com.adi.magicspacex.utils.ui.PagerDotsIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
+fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState, goBack: () -> Unit) {
     val launch = launchDetailsUiState.launch
 
     Scaffold(
@@ -44,12 +41,26 @@ fun LaunchScreen(launchDetailsUiState: LaunchDetailsUiState) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        if (launch?.name != null) launch.name else stringResource(R.string.launch),
+                        text = if (launch?.name != null) {
+                            launch.name
+                        } else {
+                            stringResource(R.string.launch)
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                modifier = Modifier.height(45.dp)
+                modifier = Modifier.height(45.dp),
+                navigationIcon = {
+                    IconButton(
+                        onClick = goBack
+                    ) {
+                        Icon(
+                            Icons.Outlined.ArrowBack,
+                            contentDescription = "Back button"
+                        )
+                    }
+                }
             )
         },
     ) {
@@ -81,38 +92,47 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (launch?.links != null)
+                    if (launch?.links != null) {
                         AsyncImage(
                             model = launch.links.patch.large,
                             contentDescription = null,
                             modifier = Modifier
                                 .size(350.dp)
                         )
-                    if (launch?.date_utc != null)
+                    }
+
+                    if (launch?.date_utc != null) {
                         Text(
                             formatStringToLocalDateString(launch.date_utc),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(vertical = 10.dp)
                         )
+                    }
                 }
-                if (launch?.links != null && launch.links.flickr.original.isNotEmpty())
+
+                if (launch?.links != null && launch.links.flickr.original.isNotEmpty()) {
                     PagerSection(
                         launch,
                         Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(16.dp),
                     )
+                }
+
                 Divider(
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
-                if (launch?.details != null)
+
+                if (launch?.details != null) {
                     Text(
                         launch.details,
                         style = MaterialTheme.typography.titleMedium.copy(
                             textAlign = TextAlign.Justify
                         )
                     )
+                }
+
                 if (rocket != null && rocket.flickr_images.isNotEmpty()) {
                     CardSection(
                         stringResource(R.string.rocket),
@@ -120,6 +140,7 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                         rocket.flickr_images.first(),
                     )
                 }
+
                 if (launchpad != null && launchpad.images.large.isNotEmpty()) {
                     CardSection(
                         stringResource(R.string.launchpad),
@@ -127,6 +148,7 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                         launchpad.images.large.first(),
                     )
                 }
+
                 if (ship != null) {
                     CardSection(stringResource(R.string.ship), ship.name, ship.image)
                 }
@@ -135,49 +157,49 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
+
                 if (launch?.links != null) {
-                    WebcastButton(context, launch.links.webcast)
+                    WebcastButton(onWebcastClick = { context.openInExternalBrowser(launch.links.webcast) })
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PagerSection(launch: Launch, modifier: Modifier) {
     val imageUrls: List<String>? = launch.links?.flickr?.original
-    val pagerState = imageUrls?.let {
-        rememberPagerState(
-            pageCount = it.size,
-        )
-    }
-    if (pagerState != null) {
+    val pagerState = rememberPagerState()
+
+    if (!imageUrls.isNullOrEmpty()) {
         HorizontalPager(
             state = pagerState,
+            pageCount = imageUrls.size,
             modifier = Modifier.height(500.dp)
-        ) {
+        ) { index ->
             AsyncImage(
-                model = imageUrls[it],
+                model = imageUrls[index],
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.height(500.dp)
             )
         }
-    }
-    if (pagerState != null) {
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            activeColor = MaterialTheme.colorScheme.primary,
-            inactiveColor = MaterialTheme.colorScheme.secondary,
-            modifier = modifier,
-        )
+
+        if (imageUrls.size > 1) {
+            PagerDotsIndicator(
+                totalNumberOfItems = imageUrls.size,
+                selectedIndex = pagerState.currentPage,
+                modifier = modifier,
+            )
+        }
     }
 }
 
 @Composable
 private fun CardSection(sectionName: String, name: String, imageUrl: String) {
     Text(
-        sectionName,
+        text = sectionName,
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier
             .fillMaxWidth()
@@ -209,7 +231,7 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
                     ),
             )
             Text(
-                name,
+                text = name,
                 modifier = Modifier.align(Alignment.Center),
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = MaterialTheme.colorScheme.onBackground,
@@ -220,9 +242,9 @@ private fun CardSection(sectionName: String, name: String, imageUrl: String) {
 }
 
 @Composable
-private fun WebcastButton(context: Context, url: String) {
+private fun WebcastButton(onWebcastClick: () -> Unit) {
     Button(
-        onClick = { launchUrl(context, url) },
+        onClick = onWebcastClick,
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -232,13 +254,13 @@ private fun WebcastButton(context: Context, url: String) {
             .fillMaxWidth()
     ) {
         Icon(
-            Icons.Outlined.PlayArrow,
+            imageVector = Icons.Outlined.PlayArrow,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onPrimary,
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            stringResource(R.string.watch_webcast),
+            text = stringResource(R.string.watch_webcast),
             style = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.onPrimary,
             )

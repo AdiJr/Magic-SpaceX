@@ -1,4 +1,4 @@
-package com.adi.magicspacex.ui.viewModels
+package com.adi.magicspacex.ui.screens.launch
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -16,21 +16,13 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-data class LaunchDetailsUiState(
-    val isLoading: Boolean = false,
-    val launch: Launch? = null,
-    val rocket: Rocket? = null,
-    val launchpad: Launchpad? = null,
-    val ship: Ship? = null,
-    val exception: Exception? = null,
-)
-
 @HiltViewModel
 class LaunchDetailsViewModel @Inject constructor(
     private val spacexRepository: SpacexRepository,
     savedStateHandle: SavedStateHandle,
 ) :
     ViewModel() {
+
     private val _uiState = MutableStateFlow(LaunchDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -56,7 +48,7 @@ class LaunchDetailsViewModel @Inject constructor(
             fetchRocketById(launch.rocket)
         if (launch.launchpad != null)
             fetchLaunchpadById(launch.launchpad)
-        if (launch.ships != null && launch.ships.isNotEmpty())
+        if (!launch.ships.isNullOrEmpty())
             fetchShipById(launch.ships.first())
     }
 
@@ -90,3 +82,12 @@ class LaunchDetailsViewModel @Inject constructor(
         }
     }
 }
+
+data class LaunchDetailsUiState(
+    val isLoading: Boolean = false,
+    val launch: Launch? = null,
+    val rocket: Rocket? = null,
+    val launchpad: Launchpad? = null,
+    val ship: Ship? = null,
+    val exception: Exception? = null,
+)

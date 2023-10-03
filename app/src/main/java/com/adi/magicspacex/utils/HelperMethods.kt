@@ -1,16 +1,10 @@
 package com.adi.magicspacex.utils
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import java.text.SimpleDateFormat
-import java.util.*
-
-fun launchUrl(context: Context, url: String) {
-    val browserIntent =
-        Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(browserIntent)
-}
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 fun formatStringToLocalDate(utcDate: String): Date {
     val inputFormat =
