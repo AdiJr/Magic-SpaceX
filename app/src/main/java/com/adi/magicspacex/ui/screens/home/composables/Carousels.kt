@@ -49,12 +49,13 @@ fun RocketsCarouselSection(rockets: List<Rocket>) {
 fun PastLaunchesCarouselSection(
     launches: List<Launch>, navigateToLaunchDetails: (String) -> Unit,
 ) {
-    Column(Modifier.padding(vertical = 20.dp)) {
+    Column {
         Text(
             stringResource(R.string.past_missions),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 10.dp)
         )
+
         LazyRow {
             items(launches.reversed().subList(1, launches.size)
                 .filter { it.links != null && it.links.flickr.original.isNotEmpty() }) { launch ->

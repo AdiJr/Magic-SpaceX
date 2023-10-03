@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +21,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -49,6 +52,10 @@ import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.model.helpers.DataState
 import com.adi.magicspacex.utils.model.helpers.State
 import com.adi.magicspacex.utils.ui.LoadingSection
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +73,10 @@ fun HomeScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                modifier = Modifier.height(45.dp)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                )
             )
         },
     ) {
@@ -91,8 +101,7 @@ private fun HomeScreenBody(
 ) {
     LoadingSection(isLoading = homeViewState is State.Loading) {
         Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
+            Modifier.verticalScroll(rememberScrollState())
         ) {
             if (homeViewState is DataState.Loaded) {
                 val spacexData = homeViewState.data
@@ -160,12 +169,12 @@ private fun LatestLaunchSection(
             ) {
                 Text(
                     text = stringResource(R.string.latest_launch),
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary),
                 )
 
                 Text(
                     text = launch.name,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimary),
                 )
 
             }
@@ -180,10 +189,36 @@ private fun ContentSection(
 ) {
 
     Column(Modifier.padding(horizontal = 20.dp)) {
+        val compositionLeft by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_saturn))
+        val compositionRight by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_astronaut))
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.SpaceAround,
+        ) {
+            LottieAnimation(
+                composition = compositionLeft,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(180.dp),
+            )
+
+            LottieAnimation(
+                composition = compositionRight,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(180.dp),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         PastLaunchesCarouselSection(
             launches = spacexData.pastLaunches,
             navigateToLaunchDetails = navigateToLaunchDetails
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         RocketsCarouselSection(rockets = spacexData.rockets)
 

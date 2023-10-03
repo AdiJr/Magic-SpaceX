@@ -105,6 +105,8 @@ dependencies {
 
     implementation(Libs.Coil.coilCompose)
 
+    implementation(Libs.Lottie.lottieCompose)
+
     implementation(Libs.Timber.timber)
 
     androidTestImplementation(Libs.JUnit.junit)

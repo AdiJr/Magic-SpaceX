@@ -1,4 +1,4 @@
-object Libs {
+sealed class Libs {
     object Accompanist {
 
         const val insets =
@@ -76,6 +76,11 @@ object Libs {
     object Coil {
 
         const val coilCompose = "io.coil-kt:coil-compose:${Versions.coilVersion}"
+    }
+
+    object Lottie {
+
+        const val lottieCompose = "com.airbnb.android:lottie-compose:${Versions.lottieVersion}"
     }
 
     object Retrofit {
