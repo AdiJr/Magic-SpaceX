@@ -6,6 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.adi.magicspacex.utils.model.helpers.DataState
 import com.adi.magicspacex.utils.routing.NavRoute
 
 const val ROUTE_LOADER: String = "route_router"
@@ -21,10 +22,12 @@ fun NavGraphBuilder.loaderScreen(
         val viewModel: LoaderViewModel = hiltViewModel()
         val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-        LaunchedEffect(viewState.isLoading) {
-            if (viewState.isLoading.not()) {
+        LaunchedEffect(viewState) {
+            if (viewState is DataState.Loaded) {
                 navigateToHomeScreen()
             }
         }
+
+        LoaderScreen()
     }
 }

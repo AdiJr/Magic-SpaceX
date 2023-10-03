@@ -94,7 +94,7 @@ fun AppTheme(
 
     val view = LocalView.current
     val window = (view.context as Activity).window
-    window.statusBarColor = MaterialTheme.colorScheme.surface.toArgb()
+    window.statusBarColor = MaterialTheme.colorScheme.onBackground.toArgb()
 
     MaterialTheme(
         colorScheme = colorScheme,

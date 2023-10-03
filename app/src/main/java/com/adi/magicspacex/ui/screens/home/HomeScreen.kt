@@ -34,11 +34,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.company_info.CompanyInfo
-import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.models.launchpad.Launchpad
-import com.adi.magicspacex.models.rocket.Rocket
-import com.adi.magicspacex.models.ship.Ship
+import com.adi.magicspacex.repository.SpacexData
 import com.adi.magicspacex.ui.screens.home.composables.DragonColumn
 import com.adi.magicspacex.ui.screens.home.composables.LaunchpadsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.NextLaunchBanner
@@ -49,12 +46,14 @@ import com.adi.magicspacex.utils.constants.FLICKR_LOGO_URL
 import com.adi.magicspacex.utils.constants.TWITTER_LOGO_URL
 import com.adi.magicspacex.utils.constants.WEBSITE_LOGO_URL
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
+import com.adi.magicspacex.utils.model.helpers.DataState
+import com.adi.magicspacex.utils.model.helpers.State
 import com.adi.magicspacex.utils.ui.LoadingSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    homeViewState: HomeViewState,
+    homeViewState: DataState<SpacexData?>,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
     Scaffold(
@@ -87,32 +86,31 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenBody(
-    homeViewState: HomeViewState,
+    homeViewState: DataState<SpacexData?>,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    LoadingSection(isLoading = homeViewState.isLoading) {
+    LoadingSection(isLoading = homeViewState is State.Loading) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
         ) {
-            if (homeViewState.nextLaunch != null) {
-                NextLaunchBanner(homeViewState.nextLaunch, navigateToLaunchDetails)
-            }
+            if (homeViewState is DataState.Loaded) {
+                val spacexData = homeViewState.data
 
-            if (homeViewState.latestLaunch != null) {
-                LatestLaunchSection(homeViewState.latestLaunch, navigateToLaunchDetails)
-            }
+                if (spacexData != null) {
+                    if (spacexData.nextLaunch != null) {
+                        NextLaunchBanner(spacexData.nextLaunch, navigateToLaunchDetails)
+                    }
 
-            homeViewState.companyInfo?.let {
-                ContentSection(
-                    homeViewState.rockets,
-                    homeViewState.pastLaunches,
-                    homeViewState.dragons,
-                    homeViewState.launchpads,
-                    homeViewState.ships,
-                    it,
-                    navigateToLaunchDetails,
-                )
+                    if (spacexData.latestLaunch != null) {
+                        LatestLaunchSection(spacexData.latestLaunch, navigateToLaunchDetails)
+                    }
+
+                    ContentSection(
+                        spacexData = spacexData,
+                        navigateToLaunchDetails = navigateToLaunchDetails,
+                    )
+                }
             }
         }
     }
@@ -152,6 +150,7 @@ private fun LatestLaunchSection(
                     )
             )
         }
+
         if (launch.name != null) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -163,6 +162,7 @@ private fun LatestLaunchSection(
                     text = stringResource(R.string.latest_launch),
                     style = MaterialTheme.typography.titleLarge,
                 )
+
                 Text(
                     text = launch.name,
                     style = MaterialTheme.typography.titleLarge,
@@ -175,37 +175,45 @@ private fun LatestLaunchSection(
 
 @Composable
 private fun ContentSection(
-    rockets: List<Rocket>,
-    pastLaunches: List<Launch>,
-    dragons: List<Dragon>,
-    launchpads: List<Launchpad>,
-    ships: List<Ship>,
-    companyInfo: CompanyInfo,
+    spacexData: SpacexData,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
 
     Column(Modifier.padding(horizontal = 20.dp)) {
-        PastLaunchesCarouselSection(pastLaunches, navigateToLaunchDetails)
-        RocketsCarouselSection(rockets)
-        DragonColumn(dragons)
-        LaunchpadsCarouselSection(launchpads)
-        ShipsCarouselSection(ships)
-        AboutSection(companyInfo)
+        PastLaunchesCarouselSection(
+            launches = spacexData.pastLaunches,
+            navigateToLaunchDetails = navigateToLaunchDetails
+        )
+
+        RocketsCarouselSection(rockets = spacexData.rockets)
+
+        DragonColumn(dragons = spacexData.dragons)
+
+        LaunchpadsCarouselSection(launchpads = spacexData.launchpads)
+
+        ShipsCarouselSection(ships = spacexData.ships)
+
+        if (spacexData.companyInfo != null) {
+            AboutSection(companyInfo = spacexData.companyInfo)
+        }
     }
 }
 
 @Composable
 fun AboutSection(companyInfo: CompanyInfo) {
     val context = LocalContext.current
+
     Text(
         text = stringResource(R.string.about),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(vertical = 20.dp)
     )
+
     Text(
         text = companyInfo.summary,
         style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Justify),
     )
+
     OutlinedButton(
         onClick = { context.openInExternalBrowser(url = companyInfo.links.website) },
         modifier = Modifier.padding(top = 20.dp),
@@ -215,6 +223,7 @@ fun AboutSection(companyInfo: CompanyInfo) {
             style = MaterialTheme.typography.titleMedium,
         )
     }
+
     Text(
         text = stringResource(R.string.links),
         style = MaterialTheme.typography.titleLarge,
@@ -222,6 +231,7 @@ fun AboutSection(companyInfo: CompanyInfo) {
             .padding(vertical = 20.dp)
             .fillMaxWidth()
     )
+
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -232,10 +242,12 @@ fun AboutSection(companyInfo: CompanyInfo) {
             imageUrl = WEBSITE_LOGO_URL,
             url = companyInfo.links.website
         )
+
         SocialImageLink(
             imageUrl = FLICKR_LOGO_URL,
             url = companyInfo.links.flickr
         )
+
         SocialImageLink(
             imageUrl = TWITTER_LOGO_URL,
             url = companyInfo.links.twitter
@@ -246,6 +258,7 @@ fun AboutSection(companyInfo: CompanyInfo) {
 @Composable
 private fun SocialImageLink(imageUrl: String, url: String) {
     val context = LocalContext.current
+
     AsyncImage(
         model = imageUrl,
         contentDescription = null,

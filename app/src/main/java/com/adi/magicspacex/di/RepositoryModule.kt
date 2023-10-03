@@ -1,6 +1,7 @@
 package com.adi.magicspacex.di
 
 import com.adi.magicspacex.repository.SpacexRepository
+import com.adi.magicspacex.repository.SpacexRepositoryImpl
 import com.adi.magicspacex.repository.remote.SpacexService
 import dagger.Module
 import dagger.Provides
@@ -15,6 +16,5 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideRepository(spacexService: SpacexService): SpacexRepository =
-        SpacexRepository(spacexService)
-
+        SpacexRepositoryImpl(spacexService)
 }

@@ -2,9 +2,11 @@ package com.adi.magicspacex.ui.screens.loader
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adi.magicspacex.repository.SpacexRepository
 import com.adi.magicspacex.utils.cancellationAwareTryCatch
+import com.adi.magicspacex.utils.model.helpers.DataState
+import com.adi.magicspacex.utils.model.helpers.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,45 +14,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoaderViewModel @Inject constructor() : ViewModel() {
+class LoaderViewModel @Inject constructor(
+    private val spacexRepository: SpacexRepository,
+) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(ViewState.default())
+    private val _viewState = MutableStateFlow<DataState<Unit>>(State.Idle)
     val viewState = _viewState.asStateFlow()
 
     init {
         viewModelScope.launch {
             cancellationAwareTryCatch(
                 tryBlock = {
-                    _viewState.update { it.copy(isLoading = true) }
+                    _viewState.update { State.Loading }
 
-                    delay(3000)
-                    // TODO: fetch data
+                    spacexRepository.fetchSpacexData()
 
-                    _viewState.update { it.copy(isLoading = false) }
-                }, catchBlock = {
-                    _viewState.update {
-                        it.copy(
-                            isLoading = false,
-                            isError = true,
-                        )
-                    }
+                    _viewState.update { DataState.Loaded(Unit) }
+                }, catchBlock = { ex ->
+                    _viewState.update { State.Error(ex) }
                 }
-            )
-        }
-    }
-}
-
-data class ViewState(
-    val isLoading: Boolean,
-    val isError: Boolean,
-) {
-
-    companion object {
-
-        fun default(): ViewState {
-            return ViewState(
-                isLoading = false,
-                isError = false,
             )
         }
     }

@@ -21,7 +21,10 @@ fun NavGraphBuilder.homeScreen(
         val viewModel: HomeViewModel = hiltViewModel()
         val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-        HomeScreen(homeViewState = viewState, navigateToLaunchDetails = navigateToLaunchDetails)
+        HomeScreen(
+            homeViewState = viewState,
+            navigateToLaunchDetails = navigateToLaunchDetails
+        )
     }
 }
 
