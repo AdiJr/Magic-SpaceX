@@ -1,4 +1,4 @@
-package com.adi.magicspacex.utils.ui
+package com.adi.magicspacex.utils.composables
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,10 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoadingSection(isLoading: Boolean, content: @Composable () -> Unit) {
+fun LoadingSection(
+    isLoading: Boolean,
+    content: @Composable () -> Unit
+) {
     if (isLoading) {
         CircularProgressIndicator(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .requiredSize(100.dp)
                 .padding(30.dp)

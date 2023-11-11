@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.adi.magicspacex.R
 
-val PoppinsRegular = FontFamily(Font(R.font.poppins_regular))
+private val PoppinsRegular = FontFamily(Font(R.font.poppins_regular))
 
 val appTypography = Typography(
     headlineLarge = TextStyle(

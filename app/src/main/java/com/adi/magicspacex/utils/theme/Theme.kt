@@ -1,17 +1,13 @@
 package com.adi.magicspacex.utils.theme
 
-import android.app.Activity
-import android.os.Build
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
 
 private val lightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -79,22 +75,13 @@ private val darkColors = darkColorScheme(
 
 @Composable
 fun AppTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkThemeEnabled: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    // Dynamic color is available on Android 12+
-    val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val context = LocalContext.current
     val colorScheme = when {
-        dynamicColor && useDarkTheme -> dynamicDarkColorScheme(context)
-        dynamicColor && !useDarkTheme -> dynamicLightColorScheme(context)
-        useDarkTheme -> darkColors
+        isDarkThemeEnabled -> darkColors
         else -> lightColors
     }
-
-    val view = LocalView.current
-    val window = (view.context as Activity).window
-    window.statusBarColor = MaterialTheme.colorScheme.onBackground.toArgb()
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -102,3 +89,15 @@ fun AppTheme(
         content = content
     )
 }
+
+@Preview(
+    name = "Light Mode",
+    uiMode = UI_MODE_NIGHT_NO,
+    showBackground = true
+)
+@Preview(
+    name = "Dark Mode",
+    uiMode = UI_MODE_NIGHT_YES,
+    showBackground = true
+)
+annotation class PreviewLightDark

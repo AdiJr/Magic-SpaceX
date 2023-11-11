@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.utils.composables.LoadingSection
+import com.adi.magicspacex.utils.composables.PagerDotsIndicator
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.formatStringToLocalDateString
-import com.adi.magicspacex.utils.ui.LoadingSection
-import com.adi.magicspacex.utils.ui.PagerDotsIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

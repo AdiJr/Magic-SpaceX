@@ -7,10 +7,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.adi.magicspacex.utils.model.helpers.DataState
-import com.adi.magicspacex.utils.routing.NavRoute
 
 const val ROUTE_LOADER: String = "route_router"
-internal val routeLoader = NavRoute(ROUTE_LOADER)
 
 /**
  * Navigation graph description for the app router.
@@ -18,7 +16,7 @@ internal val routeLoader = NavRoute(ROUTE_LOADER)
 fun NavGraphBuilder.loaderScreen(
     navigateToHomeScreen: () -> Unit,
 ) {
-    composable(route = routeLoader.getRouteWithPlaceholders()) {
+    composable(route = ROUTE_LOADER) {
         val viewModel: LoaderViewModel = hiltViewModel()
         val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
