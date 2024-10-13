@@ -36,7 +36,7 @@ import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
-import com.adi.magicspacex.ui.screens.home.composables.DragonColumn
+import com.adi.magicspacex.ui.screens.home.composables.DragonSection
 import com.adi.magicspacex.ui.screens.home.composables.LaunchpadsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.PastLaunchesCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.RocketsCarouselSection
@@ -220,9 +220,15 @@ private fun ContentSection(
 
         RocketsCarouselSection(rockets = rockets)
 
-        DragonColumn(dragons = dragons)
+        VerticalSpacer(height = 20.dp)
+
+        DragonSection(dragons = dragons)
+
+        VerticalSpacer(height = 20.dp)
 
         LaunchpadsCarouselSection(launchpads = launchpads)
+
+        VerticalSpacer(height = 20.dp)
 
         ShipsCarouselSection(ships = ships)
 
