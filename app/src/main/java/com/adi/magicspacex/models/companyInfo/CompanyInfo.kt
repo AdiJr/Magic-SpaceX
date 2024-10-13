@@ -1,4 +1,4 @@
-package com.adi.magicspacex.models.company_info
+package com.adi.magicspacex.models.companyInfo
 
 data class CompanyInfo(
     val ceo: String,

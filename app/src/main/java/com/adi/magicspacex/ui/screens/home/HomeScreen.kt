@@ -1,14 +1,19 @@
 package com.adi.magicspacex.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -25,16 +30,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
-import com.adi.magicspacex.models.company_info.CompanyInfo
+import com.adi.magicspacex.models.companyInfo.CompanyInfo
+import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.repository.SpacexData
+import com.adi.magicspacex.models.launchpad.Launchpad
+import com.adi.magicspacex.models.rocket.Rocket
+import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.ui.screens.home.composables.DragonColumn
 import com.adi.magicspacex.ui.screens.home.composables.LaunchpadsCarouselSection
-import com.adi.magicspacex.ui.screens.home.composables.NextLaunchBanner
 import com.adi.magicspacex.ui.screens.home.composables.PastLaunchesCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.RocketsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.ShipsCarouselSection
-import com.adi.magicspacex.utils.composables.LoadingSection
+import com.adi.magicspacex.ui.screens.home.composables.UpcomingLaunchSection
 import com.adi.magicspacex.utils.composables.VerticalSpacer
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.model.helpers.DataState
@@ -46,11 +53,12 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun HomeScreen(
-    homeViewState: DataState<SpacexData?>,
+    homeViewState: DataState<HomeViewState>,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.background,
+        modifier = Modifier.systemBarsPadding().fillMaxSize()
     ) {
         HomeScreenBody(
             homeViewState = homeViewState,
@@ -61,42 +69,84 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenBody(
-    homeViewState: DataState<SpacexData?>,
+    homeViewState: DataState<HomeViewState>,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    LoadingSection(isLoading = homeViewState is State.Loading) {
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
-        ) {
-            if (homeViewState is DataState.Loaded && homeViewState.data != null) {
-                val spacexData = homeViewState.data
+    when (homeViewState) {
+        is State.Idle, State.Loading -> {
+            Box {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                        .requiredSize(100.dp)
+                        .padding(30.dp)
+                )
+            }
+        }
 
-                if (spacexData.nextLaunch != null) {
-                    //TODO: redesign the banner, use AnimatedVisibility if available
-                    NextLaunchBanner(spacexData.nextLaunch, navigateToLaunchDetails)
+        is DataState.Loaded -> {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                val spacexData = homeViewState.data
+                val latestLaunch = spacexData.latestLaunch
+                val nextLaunch = spacexData.nextLaunch
+
+                if (nextLaunch.id != null &&
+                    nextLaunch.name != null &&
+                    nextLaunch.date_utc != null &&
+                    nextLaunch.links != null
+                ) {
+                    UpcomingLaunchSection(
+                        id = nextLaunch.id,
+                        date = nextLaunch.date_utc,
+                        name = nextLaunch.name,
+                        webcastUrl = nextLaunch.links.webcast,
+                        navigateToLaunchDetails = navigateToLaunchDetails
+                    )
                 }
 
-                if (spacexData.latestLaunch != null) {
-                    LatestLaunchSection(spacexData.latestLaunch, navigateToLaunchDetails)
+                if (latestLaunch.id != null &&
+                    latestLaunch.name != null &&
+                    latestLaunch.links != null
+                ) {
+                    LatestLaunchSection(
+                        id = latestLaunch.id,
+                        name = latestLaunch.name,
+                        patchUrl = latestLaunch.links.patch.large,
+                        navigateToLaunchDetails = navigateToLaunchDetails
+                    )
 
                     VerticalSpacer(height = 20.dp)
                 }
 
                 ContentSection(
-                    spacexData = spacexData,
+                    pastLaunches = spacexData.pastLaunches,
+                    launchpads = spacexData.launchpads,
+                    ships = spacexData.ships,
+                    companyInfo = spacexData.companyInfo,
+                    rockets = spacexData.rockets,
+                    dragons = spacexData.dragons,
                     navigateToLaunchDetails = navigateToLaunchDetails,
                 )
             }
+        }
+
+        is State.Error -> {
+            // oh man... RUD happened. Please try to perform next liftoff later
         }
     }
 }
 
 @Composable
 private fun LatestLaunchSection(
-    launch: Launch,
+    id: String,
+    patchUrl: String,
+    name: String,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    val saturnComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_saturn))
+    val saturnComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.animation_saturn)
+    )
 
     Row(
         modifier = Modifier
@@ -122,31 +172,28 @@ private fun LatestLaunchSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if ((launch.links != null) && launch.links.patch.large.isNotEmpty()) {
-            AsyncImage(
-                modifier = Modifier.size(300.dp),
-                model = launch.links.patch.large,
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-            )
-        }
+        AsyncImage(
+            modifier = Modifier.size(300.dp),
+            model = patchUrl,
+            contentScale = ContentScale.FillBounds,
+            contentDescription = null,
+        )
 
         VerticalSpacer(height = 20.dp)
 
-        if (launch.name != null) {
-            Text(
-                text = launch.name,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+        Text(
+            text = name,
+            style = MaterialTheme.typography.titleLarge,
+        )
 
         VerticalSpacer(height = 20.dp)
 
         ElevatedButton(
             shape = RoundedCornerShape(12.dp),
-            onClick = { /*TODO*/ }) {
+            onClick = { navigateToLaunchDetails(id) },
+        ) {
             Text(
-                text = "See more",
+                text = "Learn more",
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -155,37 +202,44 @@ private fun LatestLaunchSection(
 
 @Composable
 private fun ContentSection(
-    spacexData: SpacexData,
+    pastLaunches: List<Launch>,
+    rockets: List<Rocket>,
+    dragons: List<Dragon>,
+    launchpads: List<Launchpad>,
+    ships: List<Ship>,
+    companyInfo: CompanyInfo,
     navigateToLaunchDetails: (String) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp),
-    ) {
+    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
         PastLaunchesCarouselSection(
-            launches = spacexData.pastLaunches,
+            launches = pastLaunches,
             navigateToLaunchDetails = navigateToLaunchDetails
         )
 
         VerticalSpacer(height = 20.dp)
 
-        RocketsCarouselSection(rockets = spacexData.rockets)
+        RocketsCarouselSection(rockets = rockets)
 
-        DragonColumn(dragons = spacexData.dragons)
+        DragonColumn(dragons = dragons)
 
-        LaunchpadsCarouselSection(launchpads = spacexData.launchpads)
+        LaunchpadsCarouselSection(launchpads = launchpads)
 
-        ShipsCarouselSection(ships = spacexData.ships)
+        ShipsCarouselSection(ships = ships)
 
-        if (spacexData.companyInfo != null) {
-            VerticalSpacer(height = 20.dp)
+        VerticalSpacer(height = 20.dp)
 
-            AboutSection(companyInfo = spacexData.companyInfo)
-        }
+        AboutSection(
+            description = companyInfo.summary,
+            websiteUrl = companyInfo.links.website,
+        )
     }
 }
 
 @Composable
-fun AboutSection(companyInfo: CompanyInfo) {
+private fun AboutSection(
+    description: String,
+    websiteUrl: String,
+) {
     val context = LocalContext.current
     val astronautComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_astronaut))
 
@@ -198,16 +252,14 @@ fun AboutSection(companyInfo: CompanyInfo) {
         VerticalSpacer(height = 20.dp)
 
         Text(
-            text = companyInfo.summary,
+            text = description,
             style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Justify),
         )
 
         VerticalSpacer(height = 20.dp)
 
         OutlinedButton(
-            onClick = {
-                context.openInExternalBrowser(url = companyInfo.links.website)
-            },
+            onClick = { context.openInExternalBrowser(url = websiteUrl) },
         ) {
             Text(
                 text = stringResource(R.string.see_more),

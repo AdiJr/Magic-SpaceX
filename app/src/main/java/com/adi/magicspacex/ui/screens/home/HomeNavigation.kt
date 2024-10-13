@@ -21,7 +21,7 @@ fun NavGraphBuilder.homeScreen(
 
         HomeScreen(
             homeViewState = viewState,
-            navigateToLaunchDetails = navigateToLaunchDetails
+            navigateToLaunchDetails = navigateToLaunchDetails,
         )
     }
 }

@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.adi.magicspacex.R
-import com.adi.magicspacex.utils.theme.PreviewLightDark
+import com.adi.magicspacex.utils.theme.LightDarkPreview
 
 @Composable
 fun LoaderScreen() {
@@ -62,7 +62,7 @@ fun LoaderScreen() {
     }
 }
 
-@PreviewLightDark
+@LightDarkPreview
 @Composable
 private fun LoadScreenPreview() {
     LoaderScreen()

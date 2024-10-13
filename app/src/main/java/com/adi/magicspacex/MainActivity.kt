@@ -15,6 +15,7 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // replace with enableEdgeToEdge after upgrading the libs
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {

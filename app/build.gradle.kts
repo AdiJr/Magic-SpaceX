@@ -38,11 +38,13 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
+            isDebuggable = true
             applicationIdSuffix = ".debug"
         }
 
         release {
             isMinifyEnabled = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -67,7 +69,7 @@ android {
         kotlinCompilerExtensionVersion = "1.4.2"
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }

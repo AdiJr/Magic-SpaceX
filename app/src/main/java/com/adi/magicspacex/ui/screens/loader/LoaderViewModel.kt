@@ -27,7 +27,7 @@ class LoaderViewModel @Inject constructor(
                 tryBlock = {
                     _viewState.update { State.Loading }
 
-                    spacexRepository.fetchSpacexData()
+                    // delete loader vm -> incorporate nice welcome full screen carousel
 
                     _viewState.update { DataState.Loaded(Unit) }
                 }, catchBlock = { ex ->

@@ -2,7 +2,12 @@ package com.adi.magicspacex.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.adi.magicspacex.repository.SpacexData
+import com.adi.magicspacex.models.companyInfo.CompanyInfo
+import com.adi.magicspacex.models.dragon.Dragon
+import com.adi.magicspacex.models.launch.Launch
+import com.adi.magicspacex.models.launchpad.Launchpad
+import com.adi.magicspacex.models.rocket.Rocket
+import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.repository.SpacexRepository
 import com.adi.magicspacex.utils.cancellationAwareTryCatch
 import com.adi.magicspacex.utils.model.helpers.DataState
@@ -20,7 +25,7 @@ class HomeViewModel @Inject constructor(
     private val spacexRepository: SpacexRepository,
 ) : ViewModel() {
 
-    private val _viewStateFlow = MutableStateFlow<DataState<SpacexData?>>(State.Idle)
+    private val _viewStateFlow = MutableStateFlow<DataState<HomeViewState>>(State.Idle)
     val viewState = _viewStateFlow.asStateFlow()
 
     init {
@@ -29,10 +34,28 @@ class HomeViewModel @Inject constructor(
                 tryBlock = {
                     _viewStateFlow.update { State.Loading }
 
-                    val spacexData = spacexRepository.spacexDataFlow()
+                    val nextLaunch = spacexRepository.fetchNextLaunch()
+                    val latestLaunch = spacexRepository.fetchLatestLaunch()
+                    val pastLaunches = spacexRepository.fetchPastLaunches()
+                    val rockets = spacexRepository.fetchRockets()
+                    val dragons = spacexRepository.fetchDragons()
+                    val launchpads = spacexRepository.fetchLaunchpads()
+                    val ships = spacexRepository.fetchShips()
+                    val companyInfo = spacexRepository.fetchCompanyInfo()
+
+                    val viewState = HomeViewState(
+                        nextLaunch = nextLaunch,
+                        latestLaunch = latestLaunch,
+                        pastLaunches = pastLaunches,
+                        rockets = rockets,
+                        dragons = dragons,
+                        launchpads = launchpads,
+                        ships = ships,
+                        companyInfo = companyInfo,
+                    )
 
                     _viewStateFlow.update {
-                        DataState.Loaded(spacexData.value)
+                        DataState.Loaded(viewState)
                     }
                 },
                 catchBlock = { ex ->
@@ -44,3 +67,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
+
+data class HomeViewState(
+    val companyInfo: CompanyInfo,
+    val latestLaunch: Launch,
+    val rockets: List<Rocket>,
+    val pastLaunches: List<Launch>,
+    val dragons: List<Dragon>,
+    val launchpads: List<Launchpad>,
+    val ships: List<Ship>,
+    val nextLaunch: Launch,
+)

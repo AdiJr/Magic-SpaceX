@@ -100,4 +100,4 @@ fun AppTheme(
     uiMode = UI_MODE_NIGHT_YES,
     showBackground = true
 )
-annotation class PreviewLightDark
+annotation class LightDarkPreview

@@ -1,88 +1,89 @@
 package com.adi.magicspacex.repository
 
-import com.adi.magicspacex.models.company_info.CompanyInfo
+import com.adi.magicspacex.models.companyInfo.CompanyInfo
 import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.repository.remote.SpacexService
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 interface SpacexRepository {
+    suspend fun fetchLaunchById(launchId: String): Launch
 
-    suspend fun fetchSpacexData()
+    suspend fun fetchRocketById(rocketId: String): Rocket
 
-    fun spacexDataFlow(): StateFlow<SpacexData?>
+    suspend fun fetchLaunchpadById(launchpadId: String): Launchpad
 
-    suspend fun fetchLaunchById(launchId: String)
+    suspend fun fetchShipById(shipId: String): Ship
 
-    suspend fun fetchRocketById(rocketId: String)
+    suspend fun fetchCompanyInfo(): CompanyInfo
 
-    suspend fun fetchLaunchpadById(launchpadId: String)
+    suspend fun fetchLatestLaunch(): Launch
 
-    suspend fun fetchShipById(shipId: String)
+    suspend fun fetchRockets(): List<Rocket>
+
+    suspend fun fetchPastLaunches(): List<Launch>
+
+    suspend fun fetchDragons(): List<Dragon>
+
+    suspend fun fetchLaunchpads(): List<Launchpad>
+
+    suspend fun fetchShips(): List<Ship>
+
+    suspend fun fetchNextLaunch(): Launch
 }
 
 internal class SpacexRepositoryImpl @Inject constructor(
     private val spacexService: SpacexService,
 ) : SpacexRepository {
 
-    private val _spacexDataStateFlow = MutableStateFlow<SpacexData?>(null)
-
-    override suspend fun fetchSpacexData() {
-        val companyInfo = spacexService.fetchCompanyInfo()
-        val latestLaunch = spacexService.fetchLatestLaunch()
-        val rockets = spacexService.fetchRockets()
-        val pastLaunches = spacexService.fetchPastLaunches()
-        val dragons = spacexService.fetchDragons()
-        val launchpads = spacexService.fetchLaunchpads()
-        val ships = spacexService.fetchShips()
-        val nextLaunch = spacexService.fetchNextLaunch()
-
-        _spacexDataStateFlow.update {
-            SpacexData(
-                companyInfo = companyInfo,
-                latestLaunch = latestLaunch,
-                rockets = rockets,
-                pastLaunches = pastLaunches,
-                dragons = dragons,
-                launchpads = launchpads,
-                ships = ships,
-                nextLaunch = nextLaunch,
-            )
-        }
+    override suspend fun fetchLaunchById(launchId: String): Launch {
+        return spacexService.fetchLaunchById(launchId)
     }
 
-    override fun spacexDataFlow() = _spacexDataStateFlow
-
-    override suspend fun fetchLaunchById(launchId: String) {
-        spacexService.fetchLaunchById(launchId)
+    override suspend fun fetchRocketById(rocketId: String): Rocket {
+        return spacexService.fetchRocketById(rocketId)
     }
 
-    override suspend fun fetchRocketById(rocketId: String) {
-        spacexService.fetchRocketById(rocketId)
+    override suspend fun fetchLaunchpadById(launchpadId: String): Launchpad {
+        return spacexService.fetchLaunchpadById(launchpadId)
     }
 
-    override suspend fun fetchLaunchpadById(launchpadId: String) {
-        spacexService.fetchLaunchpadById(launchpadId)
+    override suspend fun fetchShipById(shipId: String): Ship {
+        return spacexService.fetchShipById(shipId)
     }
 
-    override suspend fun fetchShipById(shipId: String) {
-        spacexService.fetchShipById(shipId)
+    override suspend fun fetchCompanyInfo(): CompanyInfo {
+        return spacexService.fetchCompanyInfo()
+    }
+
+    override suspend fun fetchLatestLaunch(): Launch {
+        return spacexService.fetchLatestLaunch()
+    }
+
+    override suspend fun fetchRockets(): List<Rocket> {
+        return spacexService.fetchRockets()
+    }
+
+    override suspend fun fetchPastLaunches(): List<Launch> {
+        return spacexService.fetchPastLaunches()
+    }
+
+    override suspend fun fetchDragons(): List<Dragon> {
+        return spacexService.fetchDragons()
+    }
+
+    override suspend fun fetchLaunchpads(): List<Launchpad> {
+        return spacexService.fetchLaunchpads()
+    }
+
+    override suspend fun fetchShips(): List<Ship> {
+        return spacexService.fetchShips()
+    }
+
+    override suspend fun fetchNextLaunch(): Launch {
+        return spacexService.fetchNextLaunch()
     }
 }
-
-data class SpacexData(
-    val companyInfo: CompanyInfo?,
-    val latestLaunch: Launch? = null,
-    val rockets: List<Rocket> = emptyList(),
-    val pastLaunches: List<Launch> = emptyList(),
-    val dragons: List<Dragon> = emptyList(),
-    val launchpads: List<Launchpad> = emptyList(),
-    val ships: List<Ship> = emptyList(),
-    val nextLaunch: Launch? = null,
-)

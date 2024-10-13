@@ -1,20 +1,20 @@
 package com.adi.magicspacex.ui.screens.home.composables
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,55 +24,43 @@ import androidx.compose.ui.unit.dp
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.formatStringToLocalDate
-import com.adi.magicspacex.utils.showTimeToNextLaunch
+import com.adi.magicspacex.utils.theme.LightDarkPreview
+import com.adi.magicspacex.utils.timeToNextLaunch
 import java.util.Calendar
 
 @Composable
-fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Unit) {
+fun UpcomingLaunchSection(
+    id: String,
+    webcastUrl: String,
+    date: String,
+    name: String,
+    navigateToLaunchDetails: (String) -> Unit,
+) {
     val context = LocalContext.current
     val isLaunchDateAfterCurrent =
-        nextLaunch.date_utc?.let { formatStringToLocalDate(it).after(Calendar.getInstance().time) }
+        formatStringToLocalDate(date).after(Calendar.getInstance().time)
 
-    Surface(
-        color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
-            MaterialTheme.colorScheme.tertiary
-        } else {
-            MaterialTheme.colorScheme.secondary
-        },
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(bottom = 20.dp)
+            .height(200.dp)
+            .padding(all = 20.dp)
             .clickable {
-                if (isLaunchDateAfterCurrent != null && !isLaunchDateAfterCurrent && nextLaunch.links != null) {
-                    context.openInExternalBrowser(url = nextLaunch.links.webcast)
-                } else if (nextLaunch.id != null) {
-                    navigateToLaunchDetails(nextLaunch.id)
+                if (isLaunchDateAfterCurrent.not()) {
+                    context.openInExternalBrowser(url = webcastUrl)
+                } else {
+                    navigateToLaunchDetails(id)
                 }
             },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 20.dp)
-        ) {
-            if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
-                NextLaunchWithNotification(nextLaunch = nextLaunch)
-            } else if (nextLaunch.name != null) {
-                Text(
-                    text = nextLaunch.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                )
-
-                Icon(
-                    imageVector = Icons.Rounded.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
-        }
+        Text(
+            text = name,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
 
@@ -88,7 +76,8 @@ private fun NextLaunchWithNotification(nextLaunch: Launch) {
         Spacer(modifier = Modifier.width(10.dp))
 
         if (nextLaunch.date_utc != null) {
-            Text(text = showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
+            val date = formatStringToLocalDate(nextLaunch.date_utc)
+            Text(text = date.timeToNextLaunch())
         }
 
         if (nextLaunch.name != null) {
@@ -100,5 +89,17 @@ private fun NextLaunchWithNotification(nextLaunch: Launch) {
         imageVector = Icons.Filled.ArrowForward,
         contentDescription = null,
         tint = MaterialTheme.colorScheme.onPrimary,
+    )
+}
+
+@Composable
+@LightDarkPreview
+private fun UpcomingLaunchSectionPreview() {
+    UpcomingLaunchSection(
+        id = "id",
+        webcastUrl = "",
+        date = "",
+        name = "xcxc",
+        navigateToLaunchDetails = {},
     )
 }
