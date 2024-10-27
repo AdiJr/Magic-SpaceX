@@ -1,104 +1,84 @@
 package com.adi.magicspacex.ui.screens.home.composables
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.utils.extensions.openInExternalBrowser
-import com.adi.magicspacex.utils.formatStringToLocalDate
-import com.adi.magicspacex.utils.showTimeToNextLaunch
-import java.util.Calendar
+import coil.compose.AsyncImage
+import com.adi.magicspacex.utils.composables.VerticalSpacer
+import com.adi.magicspacex.utils.formatStringToLocalDateString
+import com.adi.magicspacex.utils.theme.LightDarkPreview
 
 @Composable
-fun NextLaunchBanner(nextLaunch: Launch, navigateToLaunchDetails: (String) -> Unit) {
-    val context = LocalContext.current
-    val isLaunchDateAfterCurrent =
-        nextLaunch.date_utc?.let { formatStringToLocalDate(it).after(Calendar.getInstance().time) }
-
-    Surface(
-        color = if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
-            MaterialTheme.colorScheme.tertiary
-        } else {
-            MaterialTheme.colorScheme.secondary
-        },
+fun Header(
+    date: String,
+    name: String,
+) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(bottom = 20.dp)
-            .clickable {
-                if (isLaunchDateAfterCurrent != null && !isLaunchDateAfterCurrent && nextLaunch.links != null) {
-                    context.openInExternalBrowser(url = nextLaunch.links.webcast)
-                } else if (nextLaunch.id != null) {
-                    navigateToLaunchDetails(nextLaunch.id)
-                }
-            },
+            .height(450.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 20.dp)
-        ) {
-            if (isLaunchDateAfterCurrent != null && isLaunchDateAfterCurrent) {
-                NextLaunchWithNotification(nextLaunch = nextLaunch)
-            } else if (nextLaunch.name != null) {
-                Text(
-                    text = nextLaunch.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                )
+        val exampleMissionImageBackgroundUrl =
+            "https://cdn.mos.cms.futurecdn.net/XzyrtUePiZtmBgbfHQCFtc.jpg"
 
-                Icon(
-                    imageVector = Icons.Rounded.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
+        // consider using pager to nicely fade in and out 5 photos in random order
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = exampleMissionImageBackgroundUrl,
+            contentScale = ContentScale.Crop,
+            contentDescription = null,
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        0.0f to Color.Transparent,
+                        0.7f to Color.Black.copy(alpha = 0.6f),
+                        1.0f to Color.Black.copy(alpha = 0.8f)
+                    )
+                ),
+        )
+
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = name,
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            Text(
+                text = formatStringToLocalDateString(date),
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            VerticalSpacer(15.dp)
         }
     }
 }
 
 @Composable
-private fun NextLaunchWithNotification(nextLaunch: Launch) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = Icons.Filled.Notifications,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary,
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        if (nextLaunch.date_utc != null) {
-            Text(text = showTimeToNextLaunch(formatStringToLocalDate(nextLaunch.date_utc)))
-        }
-
-        if (nextLaunch.name != null) {
-            Text(text = nextLaunch.name)
-        }
-    }
-
-    Icon(
-        imageVector = Icons.Filled.ArrowForward,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onPrimary,
+@LightDarkPreview
+private fun UpcomingLaunchSectionPreview() {
+    Header(
+        date = "",
+        name = "xcxc",
     )
 }

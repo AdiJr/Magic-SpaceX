@@ -6,12 +6,8 @@
 name: MobSF
 
 on:
-  push:
-    branches: [ "master", "development" ]
   pull_request:
-    branches: [ "master" ]
-  schedule:
-    - cron: '43 5 * * 0'
+    branches: [master, development]
 
 permissions:
   contents: read
@@ -19,10 +15,10 @@ permissions:
 jobs:
   mobile-security:
     permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-    runs-on: ubuntu-latest
+      contents: read
+      security-events: write
+      actions: read
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -32,12 +28,12 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Run mobsfscan
+      - name: Run mobsf scan
         uses: MobSF/mobsfscan@a60d10a83af68e23e0b30611c6515da604f06f65
         with:
           args: . --sarif --output results.sarif || true
 
-      - name: Upload mobsfscan report
+      - name: Upload mobsf scan report
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: results.sarif

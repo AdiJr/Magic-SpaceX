@@ -1,6 +1,6 @@
 package com.adi.magicspacex.repository.remote
 
-import com.adi.magicspacex.models.company_info.CompanyInfo
+import com.adi.magicspacex.models.companyInfo.CompanyInfo
 import com.adi.magicspacex.models.dragon.Dragon
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
@@ -31,9 +31,6 @@ interface SpacexClient {
 
     @GET("v4/ships")
     suspend fun fetchShips(): List<Ship>
-
-    @GET("v5/launches/next")
-    suspend fun fetchNextLaunch(): Launch
 
     @GET("v5/launches/{id}")
     suspend fun fetchLaunchById(@Path("id") launchId: String): Launch

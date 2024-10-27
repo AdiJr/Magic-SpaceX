@@ -3,16 +3,17 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     namespace = "com.adi.magicspacex"
 
     defaultConfig {
         applicationId = "com.adi.magicspacex"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -38,10 +39,13 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
+            isDebuggable = true
             applicationIdSuffix = ".debug"
         }
+
         release {
             isMinifyEnabled = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -66,7 +70,7 @@ android {
         kotlinCompilerExtensionVersion = "1.4.2"
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
@@ -85,7 +89,10 @@ dependencies {
     implementation(Libs.Accompanist.insets)
 
     implementation(Libs.Retrofit.retrofit)
-    implementation(Libs.Retrofit.gson)
+    implementation(Libs.Retrofit.moshi)
+    implementation(Libs.Retrofit.moshiKotlin)
+
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
     implementation(Libs.OkHttp.loggingInterceptor)
 
