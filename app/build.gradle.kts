@@ -3,6 +3,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -88,7 +89,10 @@ dependencies {
     implementation(Libs.Accompanist.insets)
 
     implementation(Libs.Retrofit.retrofit)
-    implementation(Libs.Retrofit.gson)
+    implementation(Libs.Retrofit.moshi)
+    implementation(Libs.Retrofit.moshiKotlin)
+
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
     implementation(Libs.OkHttp.loggingInterceptor)
 

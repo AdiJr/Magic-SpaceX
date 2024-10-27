@@ -48,7 +48,7 @@ fun RocketsCarouselSection(rockets: List<Rocket>) {
     LazyRow {
         items(rockets.reversed()) { rocket ->
             CarouselItem(
-                imageUrl = rocket.flickr_images.first(),
+                imageUrl = rocket.images.first(),
                 cardText = rocket.name,
                 onClick = {},
             )
@@ -70,14 +70,13 @@ fun PastLaunchesCarouselSection(
 
     LazyRow {
         items(launches.reversed().subList(1, launches.size)
-            .filter { it.links != null && it.links.flickr.original.isNotEmpty() }
+            .filter { it.links.flickr.original.isNotEmpty() }
         ) { launch ->
-            if (launch.links != null && launch.name != null)
-                CarouselItem(
-                    imageUrl = launch.links.flickr.original.first(),
-                    cardText = launch.name,
-                    onClick = { if (launch.id != null) navigateToLaunchDetails(launch.id) },
-                )
+            CarouselItem(
+                imageUrl = launch.links.flickr.original.first(),
+                cardText = launch.name,
+                onClick = { navigateToLaunchDetails(launch.id) },
+            )
         }
     }
 }
@@ -106,7 +105,7 @@ fun DragonSection(dragons: List<Dragon>) {
                             .fillMaxWidth()
                             .height(400.dp)
                             .scale(1.7f),
-                        model = dragon.flickr_images.first(),
+                        model = dragon.images.first(),
                         contentDescription = null,
                     )
 
@@ -150,7 +149,7 @@ fun LaunchpadsCarouselSection(launchpads: List<Launchpad>) {
         items(launchpads.reversed()) { launchpad ->
             CarouselItem(
                 imageUrl = launchpad.images.large.first(),
-                cardText = launchpad.full_name,
+                cardText = launchpad.fullName,
                 onClick = {},
             )
         }

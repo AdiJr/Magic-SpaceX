@@ -1,105 +1,84 @@
 package com.adi.magicspacex.ui.screens.home.composables
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.adi.magicspacex.models.launch.Launch
-import com.adi.magicspacex.utils.extensions.openInExternalBrowser
-import com.adi.magicspacex.utils.formatStringToLocalDate
+import coil.compose.AsyncImage
+import com.adi.magicspacex.utils.composables.VerticalSpacer
+import com.adi.magicspacex.utils.formatStringToLocalDateString
 import com.adi.magicspacex.utils.theme.LightDarkPreview
-import com.adi.magicspacex.utils.timeToNextLaunch
-import java.util.Calendar
 
 @Composable
-fun UpcomingLaunchSection(
-    id: String,
-    webcastUrl: String,
+fun Header(
     date: String,
     name: String,
-    navigateToLaunchDetails: (String) -> Unit,
 ) {
-    val context = LocalContext.current
-    val isLaunchDateAfterCurrent =
-        formatStringToLocalDate(date).after(Calendar.getInstance().time)
-
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .padding(all = 20.dp)
-            .clickable {
-                if (isLaunchDateAfterCurrent.not()) {
-                    context.openInExternalBrowser(url = webcastUrl)
-                } else {
-                    navigateToLaunchDetails(id)
-                }
-            },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-        ),
+            .height(450.dp)
     ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.titleMedium,
-        )
-    }
-}
+        val exampleMissionImageBackgroundUrl =
+            "https://cdn.mos.cms.futurecdn.net/XzyrtUePiZtmBgbfHQCFtc.jpg"
 
-@Composable
-private fun NextLaunchWithNotification(nextLaunch: Launch) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = Icons.Filled.Notifications,
+        // consider using pager to nicely fade in and out 5 photos in random order
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = exampleMissionImageBackgroundUrl,
+            contentScale = ContentScale.Crop,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary,
         )
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        0.0f to Color.Transparent,
+                        0.7f to Color.Black.copy(alpha = 0.6f),
+                        1.0f to Color.Black.copy(alpha = 0.8f)
+                    )
+                ),
+        )
 
-        if (nextLaunch.date_utc != null) {
-            val date = formatStringToLocalDate(nextLaunch.date_utc)
-            Text(text = date.timeToNextLaunch())
-        }
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = name,
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+            )
 
-        if (nextLaunch.name != null) {
-            Text(text = nextLaunch.name)
+            Text(
+                text = formatStringToLocalDateString(date),
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            VerticalSpacer(15.dp)
         }
     }
-
-    Icon(
-        imageVector = Icons.Filled.ArrowForward,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onPrimary,
-    )
 }
 
 @Composable
 @LightDarkPreview
 private fun UpcomingLaunchSectionPreview() {
-    UpcomingLaunchSection(
-        id = "id",
-        webcastUrl = "",
+    Header(
         date = "",
         name = "xcxc",
-        navigateToLaunchDetails = {},
     )
 }

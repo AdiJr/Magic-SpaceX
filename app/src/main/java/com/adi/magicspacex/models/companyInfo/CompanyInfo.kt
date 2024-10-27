@@ -1,32 +1,25 @@
 package com.adi.magicspacex.models.companyInfo
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class CompanyInfo(
-    val ceo: String,
-    val coo: String,
-    val cto: String,
-    val cto_propulsion: String,
-    val employees: Int,
-    val founded: Int,
-    val founder: String,
     val headquarters: Headquarters,
     val id: String,
-    val launch_sites: Int,
     val links: Links,
     val name: String,
     val summary: String,
-    val test_sites: Int,
-    val valuation: Long,
-    val vehicles: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Headquarters(
     val address: String,
     val city: String,
     val state: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Links(
-    val elon_twitter: String,
     val flickr: String,
     val twitter: String,
     val website: String

@@ -32,9 +32,6 @@ interface SpacexClient {
     @GET("v4/ships")
     suspend fun fetchShips(): List<Ship>
 
-    @GET("v5/launches/next")
-    suspend fun fetchNextLaunch(): Launch
-
     @GET("v5/launches/{id}")
     suspend fun fetchLaunchById(@Path("id") launchId: String): Launch
 

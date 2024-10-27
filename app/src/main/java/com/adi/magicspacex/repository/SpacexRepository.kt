@@ -31,8 +31,6 @@ interface SpacexRepository {
     suspend fun fetchLaunchpads(): List<Launchpad>
 
     suspend fun fetchShips(): List<Ship>
-
-    suspend fun fetchNextLaunch(): Launch
 }
 
 internal class SpacexRepositoryImpl @Inject constructor(
@@ -81,9 +79,5 @@ internal class SpacexRepositoryImpl @Inject constructor(
 
     override suspend fun fetchShips(): List<Ship> {
         return spacexService.fetchShips()
-    }
-
-    override suspend fun fetchNextLaunch(): Launch {
-        return spacexService.fetchNextLaunch()
     }
 }

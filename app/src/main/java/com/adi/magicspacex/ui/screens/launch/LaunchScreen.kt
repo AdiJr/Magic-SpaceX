@@ -122,9 +122,9 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                     )
                 }
 
-                if (launch?.date_utc != null) {
+                if (launch?.launchDate != null) {
                     Text(
-                        formatStringToLocalDateString(launch.date_utc),
+                        formatStringToLocalDateString(launch.launchDate),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(vertical = 10.dp)
                     )
@@ -154,18 +154,18 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                 )
             }
 
-            if (rocket != null && rocket.flickr_images.isNotEmpty()) {
+            if (rocket != null && rocket.images.isNotEmpty()) {
                 CardSection(
                     stringResource(R.string.rocket),
                     rocket.name,
-                    rocket.flickr_images.first(),
+                    rocket.images.first(),
                 )
             }
 
             if (launchpad != null && launchpad.images.large.isNotEmpty()) {
                 CardSection(
                     stringResource(R.string.launchpad),
-                    launchpad.name,
+                    launchpad.fullName,
                     launchpad.images.large.first(),
                 )
             }
@@ -180,7 +180,11 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
             )
 
             if (launch?.links != null) {
-                WebcastButton(onWebcastClick = { context.openInExternalBrowser(launch.links.webcast) })
+                WebcastButton(onWebcastClick = { launch.links.webcast?.let {
+                    context.openInExternalBrowser(
+                        it
+                    )
+                } })
             }
         }
     }

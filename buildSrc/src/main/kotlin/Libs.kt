@@ -86,7 +86,8 @@ sealed class Libs {
     object Retrofit {
 
         const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofitVersion}"
-        const val gson = "com.squareup.retrofit2:converter-gson:${Versions.retrofitVersion}"
+        const val moshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofitVersion}"
+        const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshiKotlinVersion}"
     }
 
     object OkHttp {

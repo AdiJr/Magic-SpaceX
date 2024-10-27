@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,11 +36,11 @@ import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.ui.screens.home.composables.DragonSection
+import com.adi.magicspacex.ui.screens.home.composables.Header
 import com.adi.magicspacex.ui.screens.home.composables.LaunchpadsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.PastLaunchesCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.RocketsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.ShipsCarouselSection
-import com.adi.magicspacex.ui.screens.home.composables.UpcomingLaunchSection
 import com.adi.magicspacex.utils.composables.VerticalSpacer
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.model.helpers.DataState
@@ -58,7 +57,7 @@ fun HomeScreen(
 ) {
     Surface(
         color = MaterialTheme.colorScheme.background,
-        modifier = Modifier.systemBarsPadding().fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         HomeScreenBody(
             homeViewState = homeViewState,
@@ -89,35 +88,20 @@ private fun HomeScreenBody(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val spacexData = homeViewState.data
                 val latestLaunch = spacexData.latestLaunch
-                val nextLaunch = spacexData.nextLaunch
 
-                if (nextLaunch.id != null &&
-                    nextLaunch.name != null &&
-                    nextLaunch.date_utc != null &&
-                    nextLaunch.links != null
-                ) {
-                    UpcomingLaunchSection(
-                        id = nextLaunch.id,
-                        date = nextLaunch.date_utc,
-                        name = nextLaunch.name,
-                        webcastUrl = nextLaunch.links.webcast,
-                        navigateToLaunchDetails = navigateToLaunchDetails
-                    )
-                }
+                Header(
+                    date = latestLaunch.launchDate,
+                    name = latestLaunch.name,
+                )
 
-                if (latestLaunch.id != null &&
-                    latestLaunch.name != null &&
-                    latestLaunch.links != null
-                ) {
-                    LatestLaunchSection(
-                        id = latestLaunch.id,
-                        name = latestLaunch.name,
-                        patchUrl = latestLaunch.links.patch.large,
-                        navigateToLaunchDetails = navigateToLaunchDetails
-                    )
+                LatestLaunchSection(
+                    id = latestLaunch.id,
+                    name = latestLaunch.name,
+                    patchUrl = latestLaunch.links.patch.large,
+                    navigateToLaunchDetails = navigateToLaunchDetails
+                )
 
-                    VerticalSpacer(height = 20.dp)
-                }
+                VerticalSpacer(height = 20.dp)
 
                 ContentSection(
                     pastLaunches = spacexData.pastLaunches,

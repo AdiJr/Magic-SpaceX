@@ -1,9 +1,10 @@
 package com.adi.magicspacex.models.launch
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class LaunchLinks(
-    val article: Any,
     val flickr: Flickr,
     val patch: Patch,
-    val presskit: Any,
     val webcast: String,
 )
