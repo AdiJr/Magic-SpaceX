@@ -1,5 +1,6 @@
 package com.adi.magicspacex.ui.screens.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,94 +37,99 @@ import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
 import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.ui.screens.home.composables.DragonSection
-import com.adi.magicspacex.ui.screens.home.composables.Header
 import com.adi.magicspacex.ui.screens.home.composables.LaunchpadsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.PastLaunchesCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.RocketsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.ShipsCarouselSection
+import com.adi.magicspacex.ui.screens.home.composables.UpcomingLaunchBanner
 import com.adi.magicspacex.utils.composables.VerticalSpacer
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
+import com.adi.magicspacex.utils.formatStringToLocalDateString
 import com.adi.magicspacex.utils.model.helpers.DataState
 import com.adi.magicspacex.utils.model.helpers.State
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun HomeScreen(
     homeViewState: DataState<HomeViewState>,
-    navigateToLaunchDetails: (String) -> Unit,
+    onNavigationToLaunchDetails: (String) -> Unit,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
     ) {
-        HomeScreenBody(
-            homeViewState = homeViewState,
-            navigateToLaunchDetails = navigateToLaunchDetails,
-        )
+        when (homeViewState) {
+            is State.Idle, State.Loading -> {
+                Box {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .requiredSize(100.dp)
+                            .padding(30.dp)
+                    )
+                }
+            }
+
+            is DataState.Loaded -> {
+                ScreenContent(
+                    homeViewState = homeViewState,
+                    onNavigationToLaunchDetails = onNavigationToLaunchDetails,
+                )
+            }
+
+            is State.Error -> {
+                // oh man... RUD happened. Please try to perform next liftoff later
+            }
+        }
     }
 }
 
 @Composable
-private fun HomeScreenBody(
-    homeViewState: DataState<HomeViewState>,
-    navigateToLaunchDetails: (String) -> Unit,
+private fun ScreenContent(
+    homeViewState: DataState.Loaded<HomeViewState>,
+    onNavigationToLaunchDetails: (String) -> Unit,
 ) {
-    when (homeViewState) {
-        is State.Idle, State.Loading -> {
-            Box {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                        .requiredSize(100.dp)
-                        .padding(30.dp)
-                )
-            }
-        }
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        val spacexData = homeViewState.data
+        val latestLaunch = spacexData.latestLaunch
+        val mockNextLaunchDate = Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(20))
 
-        is DataState.Loaded -> {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                val spacexData = homeViewState.data
-                val latestLaunch = spacexData.latestLaunch
+        UpcomingLaunchBanner(
+            date = mockNextLaunchDate,
+            name = "Polaris Dawn",
+        )
 
-                Header(
-                    date = latestLaunch.launchDate,
-                    name = latestLaunch.name,
-                )
+        LatestLaunchSection(
+            id = latestLaunch.id,
+            name = latestLaunch.name,
+            date = latestLaunch.launchDate,
+            patchUrl = latestLaunch.links.patch.large,
+            navigateToLaunchDetails = onNavigationToLaunchDetails
+        )
 
-                LatestLaunchSection(
-                    id = latestLaunch.id,
-                    name = latestLaunch.name,
-                    patchUrl = latestLaunch.links.patch.large,
-                    navigateToLaunchDetails = navigateToLaunchDetails
-                )
+        VerticalSpacer(height = 20.dp)
 
-                VerticalSpacer(height = 20.dp)
-
-                ContentSection(
-                    pastLaunches = spacexData.pastLaunches,
-                    launchpads = spacexData.launchpads,
-                    ships = spacexData.ships,
-                    companyInfo = spacexData.companyInfo,
-                    rockets = spacexData.rockets,
-                    dragons = spacexData.dragons,
-                    navigateToLaunchDetails = navigateToLaunchDetails,
-                )
-            }
-        }
-
-        is State.Error -> {
-            // oh man... RUD happened. Please try to perform next liftoff later
-        }
+        ContentSection(
+            pastLaunches = spacexData.pastLaunches,
+            launchpads = spacexData.launchpads,
+            ships = spacexData.ships,
+            companyInfo = spacexData.companyInfo,
+            rockets = spacexData.rockets,
+            dragons = spacexData.dragons,
+            navigateToLaunchDetails = onNavigationToLaunchDetails,
+        )
     }
 }
 
 @Composable
 private fun LatestLaunchSection(
     id: String,
+    date: String,
     patchUrl: String,
     name: String,
     navigateToLaunchDetails: (String) -> Unit,
@@ -132,54 +138,68 @@ private fun LatestLaunchSection(
         LottieCompositionSpec.RawRes(R.raw.animation_saturn)
     )
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = stringResource(R.string.latest_launch),
-            style = MaterialTheme.typography.titleLarge,
-        )
+    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.latest_launch),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleLarge,
+                )
 
-        LottieAnimation(
-            composition = saturnComposition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.size(100.dp),
-        )
-    }
+                LottieAnimation(
+                    composition = saturnComposition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(100.dp),
+                )
+            }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier.size(300.dp),
-            model = patchUrl,
-            contentScale = ContentScale.FillBounds,
-            contentDescription = null,
-        )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                AsyncImage(
+                    modifier = Modifier.size(300.dp),
+                    model = patchUrl,
+                    contentScale = ContentScale.FillBounds,
+                    contentDescription = null,
+                )
 
-        VerticalSpacer(height = 20.dp)
+                VerticalSpacer(height = 20.dp)
 
-        Text(
-            text = name,
-            style = MaterialTheme.typography.titleLarge,
-        )
+                Text(
+                    text = name,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleLarge,
+                )
 
-        VerticalSpacer(height = 20.dp)
+                Text(
+                    text = formatStringToLocalDateString(date),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleMedium,
+                )
 
-        ElevatedButton(
-            shape = RoundedCornerShape(12.dp),
-            onClick = { navigateToLaunchDetails(id) },
-        ) {
-            Text(
-                text = "Learn more",
-                style = MaterialTheme.typography.bodyMedium,
-            )
+                VerticalSpacer(height = 20.dp)
+
+                ElevatedButton(
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = { navigateToLaunchDetails(id) },
+                ) {
+                    Text(
+                        text = "Learn more",
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+
+                VerticalSpacer(height = 10.dp)
+            }
         }
     }
 }
@@ -239,21 +259,22 @@ private fun AboutSection(
             style = MaterialTheme.typography.titleLarge,
         )
 
-        VerticalSpacer(height = 20.dp)
+        VerticalSpacer(height = 10.dp)
 
         Text(
             text = description,
-            style = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Justify),
+            style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Justify),
         )
 
-        VerticalSpacer(height = 20.dp)
+        VerticalSpacer(height = 5.dp)
 
         OutlinedButton(
+            modifier = Modifier.align(Alignment.End),
             onClick = { context.openInExternalBrowser(url = websiteUrl) },
         ) {
             Text(
                 text = stringResource(R.string.see_more),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
 

@@ -54,7 +54,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     compileOptions {
@@ -63,6 +63,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 

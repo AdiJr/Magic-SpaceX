@@ -23,6 +23,7 @@ private const val TIMEOUT = 5L
 @Module
 @InstallIn(SingletonComponent::class)
 class RemoteModule {
+
     @Provides
     @Singleton
     fun provideSpacexService(spacexClient: SpacexClient): SpacexService =
