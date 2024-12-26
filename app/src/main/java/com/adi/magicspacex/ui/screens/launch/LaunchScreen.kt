@@ -1,6 +1,5 @@
 package com.adi.magicspacex.ui.screens.launch
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,8 +23,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -140,9 +139,9 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                 )
             }
 
-            Divider(
-                color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.padding(vertical = 20.dp)
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 20.dp),
+                color = MaterialTheme.colorScheme.tertiary
             )
 
             if (launch?.details != null) {
@@ -174,32 +173,32 @@ private fun LaunchScreenBody(launchDetailsUiState: LaunchDetailsUiState) {
                 CardSection(stringResource(R.string.ship), ship.name, ship.image)
             }
 
-            Divider(
-                color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.padding(vertical = 20.dp)
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 20.dp),
+                color = MaterialTheme.colorScheme.tertiary
             )
 
             if (launch?.links != null) {
-                WebcastButton(onWebcastClick = { launch.links.webcast?.let {
-                    context.openInExternalBrowser(
-                        it
-                    )
-                } })
+                WebcastButton(onWebcastClick = {
+                    launch.links.webcast?.let {
+                        context.openInExternalBrowser(
+                            it
+                        )
+                    }
+                })
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PagerSection(launch: Launch, modifier: Modifier) {
-    val imageUrls: List<String>? = launch.links?.flickr?.original
-    val pagerState = rememberPagerState()
+    val imageUrls: List<String> = launch.links.flickr.original
+    val pagerState = rememberPagerState(pageCount = { imageUrls.size })
 
-    if (!imageUrls.isNullOrEmpty()) {
+    if (imageUrls.isNotEmpty()) {
         HorizontalPager(
             state = pagerState,
-            pageCount = imageUrls.size,
             modifier = Modifier.height(500.dp)
         ) { index ->
             AsyncImage(

@@ -1,9 +1,11 @@
 plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+
     kotlin("kapt")
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -67,16 +69,6 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.2"
-    }
-
-    packaging {
-        resources {
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-        }
-    }
-
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -85,51 +77,49 @@ android {
 }
 
 dependencies {
-    implementation(Libs.Kotlin.Coroutines.android)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
 
-    implementation(Libs.Accompanist.insets)
+    implementation(platform(libs.androidx.compose.bom))
 
-    implementation(Libs.Retrofit.retrofit)
-    implementation(Libs.Retrofit.moshi)
-    implementation(Libs.Retrofit.moshiKotlin)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling.preview)
 
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation(Libs.OkHttp.loggingInterceptor)
+    implementation(libs.androidx.navigation.compose)
 
-    implementation(Libs.AndroidX.Activity.activityCompose)
-    implementation(Libs.AndroidX.appcompat)
-    implementation(Libs.AndroidX.Compose.material3)
-    implementation(Libs.AndroidX.Compose.ui)
-    implementation(Libs.AndroidX.Compose.navigation)
-    implementation(Libs.AndroidX.Lifecycle.viewModelCompose)
-    implementation(Libs.AndroidX.Compose.toolingPreview)
-    implementation(Libs.AndroidX.Compose.lifecycle)
+    implementation(libs.coil.compose)
 
-    implementation(Libs.Hilt.android)
-    implementation(Libs.Hilt.testing)
-    implementation(Libs.Hilt.navigationCompose)
-    kapt(Libs.Hilt.androidCompiler)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
 
-    implementation(Libs.Coil.coilCompose)
+    implementation(libs.kotlin.coroutines)
 
-    implementation(Libs.Lottie.lottieCompose)
+    implementation(libs.lottie.compose)
 
-    implementation(Libs.Timber.timber)
+    ksp(libs.moshi.kotlin.codegen)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.okhttp.loggingInterceptor)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.moshi)
 
-    androidTestImplementation(Libs.JUnit.junit)
-    androidTestImplementation(Libs.AndroidX.Test.runner)
-    androidTestImplementation(Libs.AndroidX.Test.espressoCore)
-    androidTestImplementation(Libs.AndroidX.Test.rules)
-    androidTestImplementation(Libs.AndroidX.Test.Ext.junit)
-    androidTestImplementation(Libs.Kotlin.Coroutines.test)
-    androidTestImplementation(Libs.Hilt.android)
-    androidTestImplementation(Libs.Hilt.testing)
+    implementation(libs.timber)
 
-    debugImplementation(Libs.AndroidX.Compose.tooling)
+    // Test dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.coroutines.test)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.ext.junitKtx)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.hilt.android.testing)
 }
 
-// Allow references to generated code
 kapt {
     correctErrorTypes = true
 }
