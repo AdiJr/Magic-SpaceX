@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,25 +19,19 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 internal fun PagerDotsIndicator(
-    modifier: Modifier = Modifier,
     totalNumberOfItems: Int,
     selectedIndex: Int,
     selectedColor: Color = MaterialTheme.colorScheme.primary,
     unselectedColor: Color = MaterialTheme.colorScheme.secondary,
 ) {
-    Row(
-        modifier = modifier
-            .wrapContentWidth()
-            .wrapContentHeight(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        for (index in 0 until totalNumberOfItems) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        repeat(totalNumberOfItems) {
             Box(
                 modifier = Modifier
                     .size(8.dp)
                     .clip(CircleShape)
                     .background(
-                        if (index == selectedIndex) {
+                        if (it == selectedIndex) {
                             selectedColor
                         } else {
                             unselectedColor

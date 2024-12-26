@@ -13,7 +13,6 @@ fun AppNavHost(navController: NavHostController) {
         navController = navController,
         startDestination = ROUTE_LOADER,
     ) {
-
         loaderScreen(
             navigateToHomeScreen = navController::navigateToHomeScreen,
         )

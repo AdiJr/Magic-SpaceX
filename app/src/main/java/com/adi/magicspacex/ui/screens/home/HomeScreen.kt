@@ -1,5 +1,9 @@
 package com.adi.magicspacex.ui.screens.home
 
+import android.app.Activity
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +24,22 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import com.adi.magicspacex.R
 import com.adi.magicspacex.models.companyInfo.CompanyInfo
@@ -94,7 +106,37 @@ private fun ScreenContent(
     homeViewState: DataState.Loaded<HomeViewState>,
     onNavigationToLaunchDetails: (String) -> Unit,
 ) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+    val scrollState = rememberScrollState()
+    val currentScrollPosition = scrollState.value
+    val scrollThreshold = 620.dp
+    val scrollThresholdInPixels = with(LocalDensity.current) { scrollThreshold.roundToPx() }
+
+    val targetStatusBarColor by remember(currentScrollPosition) {
+        derivedStateOf {
+            if (currentScrollPosition > scrollThresholdInPixels) {
+                Color.Black
+            } else {
+                Color.Transparent
+            }
+        }
+    }
+
+    val statusBarColor by animateColorAsState(
+        targetValue = targetStatusBarColor,
+        animationSpec = tween(durationMillis = 1_000, easing = LinearOutSlowInEasing),
+        label = "status bar color"
+    )
+
+    val context = LocalContext.current
+    val view = LocalView.current
+
+    SideEffect {
+        val window = (context as Activity).window
+        window.statusBarColor = statusBarColor.toArgb()
+        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+    }
+
+    Column(modifier = Modifier.verticalScroll(scrollState)) {
         val spacexData = homeViewState.data
         val latestLaunch = spacexData.latestLaunch
         val mockNextLaunchDate = Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(20))

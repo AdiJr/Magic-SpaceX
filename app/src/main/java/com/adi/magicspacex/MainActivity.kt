@@ -2,7 +2,7 @@ package com.adi.magicspacex
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.core.view.WindowCompat
+import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.adi.magicspacex.navigation.AppNavHost
@@ -13,10 +13,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
-        // replace with enableEdgeToEdge after upgrading the libs
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val navController = rememberNavController()

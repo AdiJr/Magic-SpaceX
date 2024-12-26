@@ -213,7 +213,6 @@ private fun PagerSection(launch: Launch, modifier: Modifier) {
             PagerDotsIndicator(
                 totalNumberOfItems = imageUrls.size,
                 selectedIndex = pagerState.currentPage,
-                modifier = modifier,
             )
         }
     }
