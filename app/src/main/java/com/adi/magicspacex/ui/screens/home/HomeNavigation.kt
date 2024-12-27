@@ -6,16 +6,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val ROUTE_HOME: String = "route_home"
+@Serializable
+data object HomeScreen
 
 /**
- * Navigation graph description for the app router.
+ * Navigation graph builder for the home screen.
  */
 fun NavGraphBuilder.homeScreen(
-    navigateToLaunchDetails: (String) -> Unit,
+    navigateToLaunchDetails: (launchId: String) -> Unit,
 ) {
-    composable(route = ROUTE_HOME) {
+    composable<HomeScreen> {
         val viewModel: HomeViewModel = hiltViewModel()
         val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
@@ -30,7 +32,7 @@ fun NavGraphBuilder.homeScreen(
  * Navigate to [HomeScreen] screen.
  */
 internal fun NavController.navigateToHomeScreen() {
-    navigate(route = ROUTE_HOME) {
+    navigate(route = HomeScreen) {
         popUpTo(0)
     }
 }

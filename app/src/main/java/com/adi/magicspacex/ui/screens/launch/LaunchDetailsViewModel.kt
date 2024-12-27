@@ -2,14 +2,20 @@ package com.adi.magicspacex.ui.screens.launch
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.adi.magicspacex.models.launch.Launch
 import com.adi.magicspacex.models.launchpad.Launchpad
 import com.adi.magicspacex.models.rocket.Rocket
-import com.adi.magicspacex.models.ship.Ship
 import com.adi.magicspacex.repository.SpacexRepository
+import com.adi.magicspacex.utils.model.helpers.DataState
+import com.adi.magicspacex.utils.model.helpers.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,71 +24,42 @@ class LaunchDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LaunchDetailsUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _launchDetailsViewStateFlow =
+        MutableStateFlow<DataState<LaunchDetailsViewState>>(State.Idle)
+    val launchDetailsViewStateFlow = _launchDetailsViewStateFlow.asStateFlow()
 
-//    init {
-//        viewModelScope.launch {
-//            try {
-//                val launchId = savedStateHandle.get<String>("launchId")
-//                if (launchId != null) {
-//                    _uiState.update { it.copy(isLoading = true) }
-//                    val launch = spacexRepository.fetchLaunchById(launchId)
-//                    fetchLaunchDetails(launch)
-//                    _uiState.update { it.copy(launch = launch, isLoading = false) }
-//                }
-//            } catch (e: Exception) {
-//                _uiState.update { it.copy(exception = e, isLoading = false) }
-//                Timber.e(e, "Error in fetching launch by id")
-//            }
-//        }
-//    }
-//
-//    private suspend fun fetchLaunchDetails(launch: Launch) {
-//        if (launch.rocket != null)
-//            fetchRocketById(launch.rocket)
-//        if (launch.launchpad != null)
-//            fetchLaunchpadById(launch.launchpad)
-//        if (!launch.ships.isNullOrEmpty())
-//            fetchShipById(launch.ships.first())
-//    }
-//
-//    private suspend fun fetchRocketById(rocketId: String) {
-//        try {
-//            val rocket = spacexRepository.fetchRocketById(rocketId)
-//            _uiState.update { it.copy(rocket = rocket) }
-//        } catch (e: Exception) {
-//            _uiState.update { it.copy(exception = e, isLoading = false) }
-//            Timber.e(e, "Error in fetching rocket by id")
-//        }
-//    }
-//
-//    private suspend fun fetchLaunchpadById(launchpadId: String) {
-//        try {
-//            val launchpad = spacexRepository.fetchLaunchpadById(launchpadId)
-//            _uiState.update { it.copy(launchpad = launchpad) }
-//        } catch (e: Exception) {
-//            _uiState.update { it.copy(exception = e, isLoading = false) }
-//            Timber.e(e, "Error in fetching launchpad by id")
-//        }
-//    }
-//
-//    private suspend fun fetchShipById(shipId: String) {
-//        try {
-//            val ship = spacexRepository.fetchShipById(shipId)
-//            _uiState.update { it.copy(ship = ship) }
-//        } catch (e: Exception) {
-//            _uiState.update { it.copy(exception = e, isLoading = false) }
-//            Timber.e(e, "Error in fetching ship by id")
-//        }
-//    }
+    private val launchId = savedStateHandle.toRoute<LaunchDetails>().id
+
+    init {
+        fetchLaunchDetailsData()
+    }
+
+    fun fetchLaunchDetailsData() {
+        viewModelScope.launch {
+            try {
+                _launchDetailsViewStateFlow.update { State.Loading }
+
+                val launch = spacexRepository.fetchLaunchById(launchId)
+                val rocket = spacexRepository.fetchRocketById(launch.rocket)
+                val launchpad = spacexRepository.fetchLaunchpadById(launch.launchpad)
+
+                val launchDetailsViewState = LaunchDetailsViewState(
+                    launch = launch,
+                    rocket = rocket,
+                    launchpad = launchpad,
+                )
+
+                _launchDetailsViewStateFlow.update { DataState.Loaded(launchDetailsViewState) }
+            } catch (ex: Exception) {
+                ensureActive()
+                _launchDetailsViewStateFlow.update { State.Error(ex) }
+            }
+        }
+    }
 }
 
-data class LaunchDetailsUiState(
-    val isLoading: Boolean = false,
-    val launch: Launch? = null,
-    val rocket: Rocket? = null,
-    val launchpad: Launchpad? = null,
-    val ship: Ship? = null,
-    val exception: Exception? = null,
+data class LaunchDetailsViewState(
+    val launch: Launch,
+    val rocket: Rocket,
+    val launchpad: Launchpad,
 )

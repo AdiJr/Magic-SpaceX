@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -54,6 +52,7 @@ import com.adi.magicspacex.ui.screens.home.composables.PastLaunchesCarouselSecti
 import com.adi.magicspacex.ui.screens.home.composables.RocketsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.ShipsCarouselSection
 import com.adi.magicspacex.ui.screens.home.composables.UpcomingLaunchBanner
+import com.adi.magicspacex.utils.composables.FullScreenLoading
 import com.adi.magicspacex.utils.composables.VerticalSpacer
 import com.adi.magicspacex.utils.extensions.openInExternalBrowser
 import com.adi.magicspacex.utils.formatStringToLocalDateString
@@ -72,19 +71,12 @@ fun HomeScreen(
     onNavigationToLaunchDetails: (String) -> Unit,
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.surface,
         modifier = Modifier.fillMaxSize()
     ) {
         when (homeViewState) {
             is State.Idle, State.Loading -> {
-                Box {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .requiredSize(100.dp)
-                            .padding(30.dp)
-                    )
-                }
+                FullScreenLoading()
             }
 
             is DataState.Loaded -> {
@@ -104,7 +96,7 @@ fun HomeScreen(
 @Composable
 private fun ScreenContent(
     homeViewState: DataState.Loaded<HomeViewState>,
-    onNavigationToLaunchDetails: (String) -> Unit,
+    onNavigationToLaunchDetails: (launchId: String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val currentScrollPosition = scrollState.value
@@ -174,7 +166,7 @@ private fun LatestLaunchSection(
     date: String,
     patchUrl: String,
     name: String,
-    navigateToLaunchDetails: (String) -> Unit,
+    navigateToLaunchDetails: (launchId: String) -> Unit,
 ) {
     val saturnComposition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.animation_saturn)
@@ -196,9 +188,9 @@ private fun LatestLaunchSection(
                 )
 
                 LottieAnimation(
+                    modifier = Modifier.size(100.dp),
                     composition = saturnComposition,
                     iterations = LottieConstants.IterateForever,
-                    modifier = Modifier.size(100.dp),
                 )
             }
 

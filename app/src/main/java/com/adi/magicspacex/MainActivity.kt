@@ -20,7 +20,7 @@ class MainActivity : FragmentActivity() {
             val navController = rememberNavController()
 
             AppTheme {
-                AppNavHost(navController)
+                AppNavHost(navController = navController)
             }
         }
     }

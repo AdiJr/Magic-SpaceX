@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 
     kotlin("kapt")
 }
@@ -77,10 +78,12 @@ android {
 }
 
 dependencies {
+    val composeBom = platform(libs.androidx.compose.bom)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
 
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(composeBom)
 
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
@@ -93,6 +96,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.coil.compose)
+
+    implementation(libs.kotlinx.serialization.json)
 
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
@@ -111,6 +116,8 @@ dependencies {
     implementation(libs.timber)
 
     // Test dependencies
+    testImplementation(composeBom)
+    androidTestImplementation(composeBom)
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.coroutines.test)
     androidTestImplementation(libs.androidx.test.espresso.core)

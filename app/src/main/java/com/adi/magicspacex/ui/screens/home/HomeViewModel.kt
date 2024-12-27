@@ -34,7 +34,6 @@ class HomeViewModel @Inject constructor(
                 tryBlock = {
                     _viewStateFlow.update { State.Loading }
 
-                    val latestLaunch = spacexRepository.fetchLatestLaunch()
                     val pastLaunches = spacexRepository.fetchPastLaunches()
                     val rockets = spacexRepository.fetchRockets()
                     val dragons = spacexRepository.fetchDragons()
@@ -43,8 +42,7 @@ class HomeViewModel @Inject constructor(
                     val companyInfo = spacexRepository.fetchCompanyInfo()
 
                     val viewState = HomeViewState(
-                        nextLaunch = latestLaunch,
-                        latestLaunch = latestLaunch,
+                        latestLaunch = pastLaunches.last(),
                         pastLaunches = pastLaunches,
                         rockets = rockets,
                         dragons = dragons,
@@ -75,5 +73,4 @@ data class HomeViewState(
     val dragons: List<Dragon>,
     val launchpads: List<Launchpad>,
     val ships: List<Ship>,
-    val nextLaunch: Launch,
 )
