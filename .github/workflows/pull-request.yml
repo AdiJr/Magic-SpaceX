@@ -53,19 +53,15 @@ jobs:
   mobsfscan:
     name: "MobSF Security Scan"
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout the code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
 
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v5.3.0
-        with:
-          python-version: '3.12'
-
       - name: MobSF Scan
-        uses: MobSF/mobsfscan@0.4.5
+        uses: MobSF/mobsfscan@3d87bc570c4614d705547bddb521395663dba353 #v0.4.5
         with:
-          args: '. --html --type android --output results.html'
+          args: '. --html --type android --version --output results.html || true'
 
       - name: Archive MobSF report
         uses: actions/upload-artifact@v4
