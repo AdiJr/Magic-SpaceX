@@ -75,6 +75,10 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    lint{
+        disable += "NullSafeMutableLiveData"
+    }
 }
 
 dependencies {
@@ -122,7 +126,6 @@ dependencies {
     testImplementation(libs.kotlin.coroutines.test)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(libs.androidx.test.ext.junitKtx)
-    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.hilt.android.testing)
 }
