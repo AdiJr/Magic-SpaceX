@@ -1,0 +1,33 @@
+name: Pull Request Checks
+on: pull_request
+
+jobs:
+  ktlint:
+    name: "Kotlin Linter"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: KTLint
+        uses: vroy/gha-kotlin-linter@203eb96c88c48320dd3a37a7edf1e748e713f214 #v0.46.1
+
+  mobsfscan:
+    name: "MobSF Scan"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: MobSF Scan
+        uses: MobSF/mobsfscan@3d87bc570c4614d705547bddb521395663dba353 #v0.4.5
+        with:
+          args: '. --html --type android --version --output results.html || true'
+
+      - name: Archive reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: MobSF scan report
+          path: results.html
