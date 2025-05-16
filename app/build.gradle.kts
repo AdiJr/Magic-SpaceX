@@ -10,13 +10,13 @@ plugins {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
     namespace = "com.adi.magicspacex"
 
     defaultConfig {
         applicationId = "com.adi.magicspacex"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
