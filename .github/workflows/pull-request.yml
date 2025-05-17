@@ -5,7 +5,7 @@ permissions:
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
     branches:
       - development
 
@@ -39,6 +39,9 @@ jobs:
 
       - name: Run Linter
         run: ./gradlew lintStageDebug
+
+      - name: Run Detekt
+        run: ./gradlew detektStageDebug
 
       - name: Run Unit Tests
         run: ./gradlew testStageDebugUnitTest
