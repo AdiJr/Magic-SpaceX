@@ -4,10 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "[BOT][Dependencies]"
     labels:
-      - "dependencies"
       - "dependabot"
+      - "dependencies"
     reviewers:
       - "AdiJr"
 
@@ -16,8 +18,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 2
+    commit-message:
+      prefix: "[BOT][Github Actions]"
     labels:
-      - "github_actions"
       - "dependabot"
+      - "github-actions"
     reviewers:
       - "AdiJr"
