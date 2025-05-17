@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup environment
-        uses: ./github/actions/setup-env-action
+        uses: ./.github/actions/setup-env-action
 
       - name: Run Tests
         run: ./gradlew clean testStageDebugUnitTest
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup environment
-        uses: ./github/actions/setup-env-action
+        uses: ./.github/actions/setup-env-action
 
       - name: Run Linter
         run: ./gradlew clean lintStageDebug
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup environment
-        uses: ./github/actions/setup-env-action
+        uses: ./.github/actions/setup-env-action
 
       - name: Run Detekt
         run: ./gradlew clean detektStageDebug
