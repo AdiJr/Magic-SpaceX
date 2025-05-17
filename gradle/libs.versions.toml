@@ -7,6 +7,7 @@ androidxTestJUnitKtx = "1.2.1"
 coilCompose = "2.2.2"
 composeBom = "2025.05.00"
 composeNavigation = "2.9.0"
+detekt = "1.23.8"
 espressoCore = "3.6.1"
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
@@ -58,6 +59,7 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
