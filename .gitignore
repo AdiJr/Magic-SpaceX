@@ -77,5 +77,6 @@ lint/tmp/
 *.hprof
 
 # build files
+build/
 /buildSrc/build/
 /app/build/
