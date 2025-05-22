@@ -7,10 +7,23 @@ launches, rockets, company details, and much more.
 
 ## 📸 Screenshots
 
-|            Intro Screens            |           Main Screens            |             Launch Details              |
-|:-----------------------------------:|:---------------------------------:|:---------------------------------------:|
-| `[./screenshots/intro/intro_1.png]` | `[./screenshots/home/home_1.png]` | `[./screenshots/details/details_1.png]` |
-|                                     |                                   |                                         |
+### Introduction section
+
+![Introduction Screen #1](./screenshots/intro/intro_1.png)
+![Introduction Screen #2](./screenshots/intro/intro_2.png)
+
+### Home section
+
+![Home Screen #1](./screenshots/home/home_1.png)
+![Home Screen #2](./screenshots/home/home_2.png)
+![Home Screen #3](./screenshots/home/home_3.png)
+![Home Screen #4](./screenshots/home/home_4.png)
+![Home Screen #5](./screenshots/home/home_5.png)
+
+### Launches section
+
+![Launches Screen #1](./screenshots/details/details_1.png)
+![Launches Screen #2](./screenshots/details/details_2.png)
 
 ## ✨ Features
 
