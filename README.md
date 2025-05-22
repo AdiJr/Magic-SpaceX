@@ -22,14 +22,11 @@ launches, rockets, company details, and much more.
   <tr>
     <td><img src="./screenshots/home/home_1.png" width="300" alt="Home Screen #1"></td>
     <td><img src="./screenshots/home/home_2.png" width="300" alt="Home Screen #2"></td>
-  </tr>
-  <tr>
     <td><img src="./screenshots/home/home_3.png" width="300" alt="Home Screen #3"></td>
-    <td><img src="./screenshots/home/home_4.png" width="300" alt="Home Screen #4"></td>
   </tr>
   <tr>
+    <td><img src="./screenshots/home/home_4.png" width="300" alt="Home Screen #4"></td>
     <td><img src="./screenshots/home/home_5.png" width="300" alt="Home Screen #5"></td>
-    <td></td> <!-- Empty cell if you have an odd number -->
   </tr>
 </table>
 
