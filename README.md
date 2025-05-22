@@ -11,8 +11,8 @@ launches, rockets, company details, and much more.
 
 <table>
   <tr>
-    <td><img src="./screenshots/intro/intro_1.png" width="300" alt="Introduction Screen #1"></td>
-    <td><img src="./screenshots/intro/intro_2.png" width="300" alt="Introduction Screen #2"></td>
+    <td><img src="./screenshots/intro/intro_1.webp" width="300" alt="Introduction Screen #1"></td>
+    <td><img src="./screenshots/intro/intro_2.webp" width="300" alt="Introduction Screen #2"></td>
   </tr>
 </table>
 
