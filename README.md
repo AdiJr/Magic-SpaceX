@@ -20,13 +20,13 @@ launches, rockets, company details, and much more.
 
 <table>
   <tr>
-    <td><img src="./screenshots/home/home_1.png" width="300" alt="Home Screen #1"></td>
-    <td><img src="./screenshots/home/home_2.png" width="300" alt="Home Screen #2"></td>
-    <td><img src="./screenshots/home/home_3.png" width="300" alt="Home Screen #3"></td>
+    <td><img src="./screenshots/home/home_1.webp" width="300" alt="Home Screen #1"></td>
+    <td><img src="./screenshots/home/home_2.webp" width="300" alt="Home Screen #2"></td>
+    <td><img src="./screenshots/home/home_3.webp" width="300" alt="Home Screen #3"></td>
   </tr>
   <tr>
-    <td><img src="./screenshots/home/home_4.png" width="300" alt="Home Screen #4"></td>
-    <td><img src="./screenshots/home/home_5.png" width="300" alt="Home Screen #5"></td>
+    <td><img src="./screenshots/home/home_4.webp" width="300" alt="Home Screen #4"></td>
+    <td><img src="./screenshots/home/home_5.webp" width="300" alt="Home Screen #5"></td>
   </tr>
 </table>
 
@@ -34,8 +34,8 @@ launches, rockets, company details, and much more.
 
 <table>
   <tr>
-    <td><img src="./screenshots/details/details_1.png" width="300" alt="Launches Screen #1"></td>
-    <td><img src="./screenshots/details/details_2.png" width="300" alt="Launches Screen #2"></td>
+    <td><img src="./screenshots/details/details_1.webp" width="300" alt="Launches Screen #1"></td>
+    <td><img src="./screenshots/details/details_2.webp" width="300" alt="Launches Screen #2"></td>
   </tr>
 </table>
 
