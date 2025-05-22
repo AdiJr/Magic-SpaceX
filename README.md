@@ -9,21 +9,38 @@ launches, rockets, company details, and much more.
 
 ### Introduction section
 
-![Introduction Screen #1](./screenshots/intro/intro_1.png)
-![Introduction Screen #2](./screenshots/intro/intro_2.png)
+<table>
+  <tr>
+    <td><img src="./screenshots/intro/intro_1.png" width="300" alt="Introduction Screen #1"></td>
+    <td><img src="./screenshots/intro/intro_2.png" width="300" alt="Introduction Screen #2"></td>
+  </tr>
+</table>
 
 ### Home section
 
-![Home Screen #1](./screenshots/home/home_1.png)
-![Home Screen #2](./screenshots/home/home_2.png)
-![Home Screen #3](./screenshots/home/home_3.png)
-![Home Screen #4](./screenshots/home/home_4.png)
-![Home Screen #5](./screenshots/home/home_5.png)
+<table>
+  <tr>
+    <td><img src="./screenshots/home/home_1.png" width="300" alt="Home Screen #1"></td>
+    <td><img src="./screenshots/home/home_2.png" width="300" alt="Home Screen #2"></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshots/home/home_3.png" width="300" alt="Home Screen #3"></td>
+    <td><img src="./screenshots/home/home_4.png" width="300" alt="Home Screen #4"></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshots/home/home_5.png" width="300" alt="Home Screen #5"></td>
+    <td></td> <!-- Empty cell if you have an odd number -->
+  </tr>
+</table>
 
 ### Launches section
 
-![Launches Screen #1](./screenshots/details/details_1.png)
-![Launches Screen #2](./screenshots/details/details_2.png)
+<table>
+  <tr>
+    <td><img src="./screenshots/details/details_1.png" width="300" alt="Launches Screen #1"></td>
+    <td><img src="./screenshots/details/details_2.png" width="300" alt="Launches Screen #2"></td>
+  </tr>
+</table>
 
 ## ✨ Features
 
