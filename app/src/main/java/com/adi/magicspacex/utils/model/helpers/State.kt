@@ -30,10 +30,16 @@ sealed class State : DataState<Nothing>() {
  * Represents the state of data, which can be either loaded, loading, idle, or an error.
  * This sealed class is designed to be used in conjunction with [State] to provide a comprehensive
  * representation of data states in an application.
- *
- * @param T The type of data held by the [Loaded] state.
  */
 sealed class DataState<out T> {
 
+    /**
+     * Represents a state where data has been successfully loaded.
+     *
+     * This data class holds the actual data of type [T].
+     *
+     * @param data The successfully loaded data.
+     * @param T The type of the loaded data.
+     */
     data class Loaded<out T>(val data: T) : DataState<T>()
 }
